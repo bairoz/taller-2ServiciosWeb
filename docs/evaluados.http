@@ -1,0 +1,66 @@
+@baseUrl = http://localhost:8080/api/evaluados
+
+### Listar evaluados
+GET {{baseUrl}}
+
+### Crear evaluado válido
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nombre": "Camila",
+  "apellido": "Rojas",
+  "email": "camila.rojas@correo.cl",
+  "fechaNacimiento": "2005-03-21",
+  "genero": "FEMENINO",
+  "nivelEducativo": "UNIVERSITARIO",
+  "activo": true
+}
+
+### Crear evaluado inválido (400)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "apellido": "R",
+  "email": "no-es-email",
+  "fechaNacimiento": "2999-01-01"
+}
+
+### Crear con email duplicado (409)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nombre": "Camila",
+  "apellido": "Soto",
+  "email": "camila.rojas@correo.cl",
+  "fechaNacimiento": "2004-07-10",
+  "genero": "FEMENINO",
+  "nivelEducativo": "MEDIA",
+  "activo": true
+}
+
+### Obtener por id
+GET {{baseUrl}}/1
+
+### Obtener inexistente (404)
+GET {{baseUrl}}/999
+
+### Actualizar evaluado
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "nombre": "Camila",
+  "apellido": "Rojas",
+  "email": "camila.rojas@correo.cl",
+  "fechaNacimiento": "2005-03-21",
+  "genero": "FEMENINO",
+  "nivelEducativo": "POSTGRADO",
+  "activo": false
+}
+
+### Eliminar evaluado
+DELETE {{baseUrl}}/1
