@@ -2,20 +2,21 @@
 --  03 - Datos de prueba
 --
 --  Ejecutar conectado a "psicometria_db" después de 02_esquema.sql.
---  Las claves foráneas se resuelven por campos únicos (email, nombre,
+--  Las claves foráneas se resuelven por campos únicos (email, titulo,
 --  numero_registro) para no depender de los id generados.
 -- =====================================================================
 
 BEGIN;
 
 -- ---------------------------------------------------------------------
---  instituciones
+--  admins
+--  password_hash es un valor de ejemplo, no corresponde a una contraseña real.
 -- ---------------------------------------------------------------------
-INSERT INTO instituciones (nombre, tipo, ciudad, direccion, email_contacto, telefono, cantidad_estudiantes, fecha_convenio, activa) VALUES
-  ('Liceo Bicentenario Andrés Bello', 'LICEO',                 'Santiago',     'Av. Libertador 1450',  'orientacion@liceoandresbello.cl', '+56223456789', 1200,  '2024-03-01', TRUE),
-  ('Universidad del Pacífico Sur',    'UNIVERSIDAD',           'Valparaíso',   'Calle Brasil 2950',    'bienestar@upacificosur.cl',       '+56322123456', 8500,  '2023-08-15', TRUE),
-  ('Instituto Técnico Los Andes',     'INSTITUTO_PROFESIONAL', 'Concepción',   'O''Higgins 780',       'contacto@itlosandes.cl',          '+56412987654', 3100,  '2025-01-20', TRUE),
-  ('Colegio San Martín',              'COLEGIO',               'La Serena',    'Balmaceda 321',        'direccion@colegiosanmartin.cl',   NULL,           640,   '2022-04-10', FALSE);
+INSERT INTO admins (nombre, apellido, usuario, email, password_hash, rol, activo, intentos_fallidos, ultimo_acceso) VALUES
+  ('Javiera',  'Morales', 'jmorales', 'jmorales@psicometria.cl', '$2a$10$hashDeEjemploNoUsarEnProduccion000000000000000000001', 'SUPER_ADMIN', TRUE,  0, now() - INTERVAL '1 hour'),
+  ('Felipe',   'Castro',  'fcastro',  'fcastro@psicometria.cl',  '$2a$10$hashDeEjemploNoUsarEnProduccion000000000000000000002', 'ADMIN',       TRUE,  1, now() - INTERVAL '3 days'),
+  ('Daniela',  'Reyes',   'dreyes',   'dreyes@psicometria.cl',   '$2a$10$hashDeEjemploNoUsarEnProduccion000000000000000000003', 'LECTOR',      TRUE,  0, NULL),
+  ('Ignacio',  'Torres',  'itorres',  'itorres@psicometria.cl',  '$2a$10$hashDeEjemploNoUsarEnProduccion000000000000000000004', 'ADMIN',       FALSE, 5, now() - INTERVAL '45 days');
 
 -- ---------------------------------------------------------------------
 --  psicologos
@@ -28,17 +29,13 @@ INSERT INTO psicologos (nombre, apellido, email, numero_registro, especialidad, 
 -- ---------------------------------------------------------------------
 --  evaluados
 -- ---------------------------------------------------------------------
-INSERT INTO evaluados (institucion_id, nombre, apellido, email, fecha_nacimiento, genero, nivel_educativo, activo)
-SELECT i.id, v.nombre, v.apellido, v.email, v.fecha_nacimiento::date, v.genero::genero_evaluado, v.nivel::nivel_educativo, v.activo
-FROM (VALUES
-  ('Liceo Bicentenario Andrés Bello', 'Camila',   'Rojas',     'camila.rojas@correo.cl',     '2009-03-21', 'FEMENINO',          'MEDIA',         TRUE),
-  ('Liceo Bicentenario Andrés Bello', 'Matías',   'González',  'matias.gonzalez@correo.cl',  '2008-11-02', 'MASCULINO',         'MEDIA',         TRUE),
-  ('Universidad del Pacífico Sur',    'Sofía',    'Pérez',     'sofia.perez@correo.cl',      '2004-06-14', 'FEMENINO',          'UNIVERSITARIO', TRUE),
-  ('Universidad del Pacífico Sur',    'Alex',     'Contreras', 'alex.contreras@correo.cl',   '2003-01-30', 'NO_BINARIO',        'UNIVERSITARIO', TRUE),
-  ('Instituto Técnico Los Andes',     'Diego',    'Soto',      'diego.soto@correo.cl',       '2005-09-09', 'MASCULINO',         'TECNICO',       TRUE),
-  ('Colegio San Martín',              'Martina',  'Vargas',    'martina.vargas@correo.cl',   '2012-04-18', 'PREFIERO_NO_DECIR', 'BASICA',        FALSE)
-) AS v(institucion, nombre, apellido, email, fecha_nacimiento, genero, nivel, activo)
-JOIN instituciones i ON i.nombre = v.institucion;
+INSERT INTO evaluados (nombre, apellido, email, fecha_nacimiento, genero, nivel_educativo, activo) VALUES
+  ('Camila',   'Rojas',     'camila.rojas@correo.cl',     '2009-03-21', 'FEMENINO',          'MEDIA',         TRUE),
+  ('Matías',   'González',  'matias.gonzalez@correo.cl',  '2008-11-02', 'MASCULINO',         'MEDIA',         TRUE),
+  ('Sofía',    'Pérez',     'sofia.perez@correo.cl',      '2004-06-14', 'FEMENINO',          'UNIVERSITARIO', TRUE),
+  ('Alex',     'Contreras', 'alex.contreras@correo.cl',   '2003-01-30', 'NO_BINARIO',        'UNIVERSITARIO', TRUE),
+  ('Diego',    'Soto',      'diego.soto@correo.cl',       '2005-09-09', 'MASCULINO',         'TECNICO',       TRUE),
+  ('Martina',  'Vargas',    'martina.vargas@correo.cl',   '2012-04-18', 'PREFIERO_NO_DECIR', 'BASICA',        FALSE);
 
 -- ---------------------------------------------------------------------
 --  tests
