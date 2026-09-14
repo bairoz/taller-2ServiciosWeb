@@ -1,0 +1,9 @@
+# Copiar este archivo como "application-local.properties" (en la raíz del proyecto)
+# y completar con los datos de tu PostgreSQL local. Ese archivo está en .gitignore.
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/psicometria_db
+spring.datasource.username=postgres
+spring.datasource.password=TU_CONTRASEÑA
+
+# Descomentar para ver en consola las consultas SQL que ejecuta Hibernate
+#spring.jpa.show-sql=true

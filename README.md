@@ -7,7 +7,7 @@ Cada integrante del equipo desarrolla el CRUD de una de las 5 entidades principa
 ## Stack
 
 - Java 21
-- Spring Boot 4.1 (`spring-boot-starter-webmvc`, `spring-boot-starter-validation`)
+- Spring Boot 4.1 (`spring-boot-starter-webmvc`, `spring-boot-starter-validation`, `spring-boot-starter-data-jpa`)
 - Maven (wrapper incluido: `./mvnw`)
 - PostgreSQL 18 + pgAdmin 4 (scripts en `database/`)
 
@@ -15,19 +15,42 @@ Cada integrante del equipo desarrolla el CRUD de una de las 5 entidades principa
 
 ```
 .
-├── database/                    # Scripts SQL para pgAdmin
+├── database/                          # Scripts SQL para pgAdmin
 │   ├── 00_reiniciar_esquema.sql
 │   ├── 01_crear_base_datos.sql
 │   ├── 02_esquema.sql
 │   └── 03_datos_prueba.sql
+├── application-local.properties.example   # Plantilla de credenciales locales
 └── src/main/java/com/psicometria/api
-    ├── controllers              # Endpoints REST (/api/<entidad>)
-    ├── dto                      # DTOs con anotaciones de validación
-    ├── services                 # Lógica de negocio
-    └── exceptions               # Excepciones y manejador global de errores
+    ├── controllers                    # Endpoints REST (/api/<entidad>)
+    ├── dto                            # DTOs con anotaciones de validación (entrada/salida de la API)
+    ├── models                         # Entidades JPA (@Entity), mapeadas a las tablas
+    ├── repositories                   # Interfaces JpaRepository
+    ├── services                       # Lógica de negocio y conversión entidad <-> DTO
+    └── exceptions                     # Excepciones y manejador global de errores
 ```
 
+Flujo de una petición: `controller` (valida el DTO con `@Valid`) → `service` (reglas de negocio, convierte DTO ↔ entidad) → `repository` → PostgreSQL.
+
 ## Abrir y ejecutar
+
+### 1. Crear la base de datos
+Seguir los pasos de [Crear la base en pgAdmin](#crear-la-base-en-pgadmin). La API **no crea tablas**: si la base no existe, no inicia.
+
+### 2. Configurar la conexión
+Las credenciales **no se suben al repositorio**. Cada integrante elige una de estas opciones:
+
+**Opción A — archivo local (recomendada):** copiar `application-local.properties.example` como `application-local.properties` en la raíz del proyecto y poner su contraseña de PostgreSQL. Ese archivo está en `.gitignore`.
+
+**Opción B — variables de entorno:** en IntelliJ, `Run > Edit Configurations... > PsicometriaApiApplication > Environment variables`:
+
+```
+DB_PASSWORD=tu_contraseña
+```
+
+También se aceptan `DB_URL` (por defecto `jdbc:postgresql://localhost:5432/psicometria_db`) y `DB_USERNAME` (por defecto `postgres`).
+
+### 3. Ejecutar
 
 **IntelliJ IDEA:** `File > Open` y seleccionar la carpeta del proyecto (la que contiene `pom.xml`). IntelliJ lo importa como proyecto Maven. Ejecutar `PsicometriaApiApplication`.
 
@@ -39,12 +62,29 @@ Cada integrante del equipo desarrolla el CRUD de una de las 5 entidades principa
 
 La API queda disponible en `http://localhost:8080`.
 
+> `spring.jpa.hibernate.ddl-auto=validate`: al iniciar, Hibernate verifica que cada `@Entity` coincida con su tabla. Si falta una columna o el tipo no coincide, la aplicación no arranca y muestra qué columna falla.
+
+### Pruebas
+
+```bash
+./mvnw test
+```
+
+Las pruebas no necesitan PostgreSQL: los controllers se prueban con `@WebMvcTest` y el service mockeado, y los services con el repository mockeado (Mockito).
+
 ## Flujo de trabajo del equipo
 
 1. Actualizar `main`: `git checkout main && git pull`
 2. Crear la rama de la entidad: `git checkout -b feature/<entidad>`
-3. Implementar DTO, service y controller siguiendo la estructura de `feature/evaluados`.
-4. Subir la rama y abrir un Pull Request hacia `main`.
+3. Implementar entidad, repository, DTO, service, controller y pruebas siguiendo la estructura de `feature/evaluados`.
+4. Traer lo último de `main` (`git merge main`), correr `./mvnw test`, subir la rama y abrir un Pull Request hacia `main`.
+
+Reglas:
+
+- No modificar archivos compartidos (`pom.xml`, `application.properties`, `exceptions/`, `database/`, `README.md`) desde una rama de entidad; los cambios comunes se hacen en `main`.
+- Usar nombres específicos para enums (`RolAdmin`, `EspecialidadPsicologo`, `CategoriaTest`...) para evitar clases repetidas.
+- Enums de PostgreSQL en una entidad: `@Enumerated(EnumType.STRING)`, `@JdbcTypeCode(SqlTypes.NAMED_ENUM)` y `@Column(columnDefinition = "<nombre_del_tipo>")`.
+- Columnas `TIMESTAMPTZ` → `OffsetDateTime`; `NUMERIC` → `BigDecimal`; `JSONB` → `@JdbcTypeCode(SqlTypes.JSON)`.
 
 ## Distribución de entidades
 
