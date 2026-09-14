@@ -10,13 +10,13 @@ BEGIN;
 
 -- ---------------------------------------------------------------------
 --  admins
---  password_hash es un valor de ejemplo, no corresponde a una contraseña real.
+--  Contraseñas de ejemplo en texto plano, solo para el taller.
 -- ---------------------------------------------------------------------
-INSERT INTO admins (nombre, apellido, usuario, email, password_hash, rol, activo, intentos_fallidos, ultimo_acceso) VALUES
-  ('Javiera',  'Morales', 'jmorales', 'jmorales@psicometria.cl', '$2a$10$hashDeEjemploNoUsarEnProduccion000000000000000000001', 'SUPER_ADMIN', TRUE,  0, now() - INTERVAL '1 hour'),
-  ('Felipe',   'Castro',  'fcastro',  'fcastro@psicometria.cl',  '$2a$10$hashDeEjemploNoUsarEnProduccion000000000000000000002', 'ADMIN',       TRUE,  1, now() - INTERVAL '3 days'),
-  ('Daniela',  'Reyes',   'dreyes',   'dreyes@psicometria.cl',   '$2a$10$hashDeEjemploNoUsarEnProduccion000000000000000000003', 'LECTOR',      TRUE,  0, NULL),
-  ('Ignacio',  'Torres',  'itorres',  'itorres@psicometria.cl',  '$2a$10$hashDeEjemploNoUsarEnProduccion000000000000000000004', 'ADMIN',       FALSE, 5, now() - INTERVAL '45 days');
+INSERT INTO admins (nombre, apellido, usuario, email, password, rol, activo, intentos_fallidos, ultimo_acceso) VALUES
+  ('Javiera',  'Morales', 'jmorales', 'jmorales@psicometria.cl', 'SuperAdmin2026', 'SUPER_ADMIN', TRUE,  0, now() - INTERVAL '1 hour'),
+  ('Felipe',   'Castro',  'fcastro',  'fcastro@psicometria.cl',  'Admin12345',     'ADMIN',       TRUE,  1, now() - INTERVAL '3 days'),
+  ('Daniela',  'Reyes',   'dreyes',   'dreyes@psicometria.cl',   'Lector12345',    'LECTOR',      TRUE,  0, NULL),
+  ('Ignacio',  'Torres',  'itorres',  'itorres@psicometria.cl',  'Inactivo12345',  'ADMIN',       FALSE, 5, now() - INTERVAL '45 days');
 
 -- ---------------------------------------------------------------------
 --  psicologos
