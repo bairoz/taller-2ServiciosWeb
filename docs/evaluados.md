@@ -44,6 +44,14 @@ Errores: `400` validación / JSON inválido, `404` no encontrado, `409` email du
 
 Las mismas peticiones están en [`evaluados.http`](evaluados.http) (IntelliJ / VS Code REST Client).
 
+### Postman
+
+1. Postman > **Import** > seleccionar [`postman/evaluados.postman_collection.json`](postman/evaluados.postman_collection.json).
+2. Si la API no corre en `http://localhost:8080`, cambiar la variable `baseUrl` de la colección.
+3. Clic derecho en la colección > **Run collection** > **Run**. Las 12 peticiones se ejecutan en orden y cada una verifica su código HTTP.
+
+La petición *Crear evaluado válido* guarda el id creado en `{{evaluadoId}}`, que usan *Obtener*, *Actualizar* y *Eliminar*. El email lleva `{{$timestamp}}`, así que la colección se puede ejecutar varias veces sin chocar con el email único. La prueba del `409` usa un email de `03_datos_prueba.sql`.
+
 ### Crear
 
 ```bash
