@@ -1,6 +1,7 @@
 package com.psicometria.api.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -47,6 +48,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<RespuestaError> handleDuplicate(DuplicateResourceException ex, HttpServletRequest request) {
         return build(HttpStatus.CONFLICT, ex.getMessage(), request, null);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<RespuestaError> handleDataIntegrity(DataIntegrityViolationException ex,
+                                                              HttpServletRequest request) {
+        return build(HttpStatus.CONFLICT,
+                "La operación viola una restricción de la base de datos (dato duplicado o referencia inválida)",
+                request, null);
     }
 
     private ResponseEntity<RespuestaError> build(HttpStatus status, String message, HttpServletRequest request,
