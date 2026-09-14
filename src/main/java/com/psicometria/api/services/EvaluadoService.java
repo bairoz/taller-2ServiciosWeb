@@ -3,69 +3,97 @@ package com.psicometria.api.services;
 import com.psicometria.api.dto.EvaluadoDTO;
 import com.psicometria.api.exceptions.DuplicateResourceException;
 import com.psicometria.api.exceptions.ResourceNotFoundException;
+import com.psicometria.api.models.Evaluado;
+import com.psicometria.api.repositories.EvaluadoRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Lógica de negocio de evaluados. Por ahora los datos se guardan en memoria;
- * al conectar la base de datos solo cambia esta clase.
+ * Lógica de negocio de evaluados: reglas de negocio y conversión entre entidad y DTO.
  */
 @Service
+@Transactional(readOnly = true)
 public class EvaluadoService {
 
     private static final String RECURSO = "Evaluado";
 
-    private final Map<Long, EvaluadoDTO> evaluados = new ConcurrentHashMap<>();
-    private final AtomicLong secuencia = new AtomicLong();
+    private final EvaluadoRepository evaluadoRepository;
+
+    public EvaluadoService(EvaluadoRepository evaluadoRepository) {
+        this.evaluadoRepository = evaluadoRepository;
+    }
 
     public List<EvaluadoDTO> listar() {
-        return evaluados.values().stream()
-                .sorted(Comparator.comparing(EvaluadoDTO::id))
+        return evaluadoRepository.findAll(Sort.by("id")).stream()
+                .map(this::toDTO)
                 .toList();
     }
 
     public EvaluadoDTO obtenerPorId(Long id) {
-        EvaluadoDTO evaluado = evaluados.get(id);
-        if (evaluado == null) {
-            throw new ResourceNotFoundException(RECURSO, id);
+        return toDTO(buscar(id));
+    }
+
+    @Transactional
+    public EvaluadoDTO crear(EvaluadoDTO dto) {
+        String email = normalizarEmail(dto.email());
+        if (evaluadoRepository.existsByEmailIgnoreCase(email)) {
+            throw new DuplicateResourceException("Ya existe un evaluado con el email " + email);
         }
-        return evaluado;
+        Evaluado evaluado = new Evaluado();
+        copiarDatos(dto, evaluado);
+        return toDTO(evaluadoRepository.saveAndFlush(evaluado));
     }
 
-    public synchronized EvaluadoDTO crear(EvaluadoDTO dto) {
-        validarEmailUnico(dto.email(), null);
-        LocalDateTime ahora = LocalDateTime.now();
-        EvaluadoDTO nuevo = dto.withAuditoria(secuencia.incrementAndGet(), ahora, ahora);
-        evaluados.put(nuevo.id(), nuevo);
-        return nuevo;
-    }
-
-    public synchronized EvaluadoDTO actualizar(Long id, EvaluadoDTO dto) {
-        EvaluadoDTO actual = obtenerPorId(id);
-        validarEmailUnico(dto.email(), id);
-        EvaluadoDTO actualizado = dto.withAuditoria(id, actual.creadoAt(), LocalDateTime.now());
-        evaluados.put(id, actualizado);
-        return actualizado;
-    }
-
-    public synchronized void eliminar(Long id) {
-        if (evaluados.remove(id) == null) {
-            throw new ResourceNotFoundException(RECURSO, id);
+    @Transactional
+    public EvaluadoDTO actualizar(Long id, EvaluadoDTO dto) {
+        Evaluado evaluado = buscar(id);
+        String email = normalizarEmail(dto.email());
+        if (evaluadoRepository.existsByEmailIgnoreCaseAndIdNot(email, id)) {
+            throw new DuplicateResourceException("Ya existe un evaluado con el email " + email);
         }
+        copiarDatos(dto, evaluado);
+        return toDTO(evaluadoRepository.saveAndFlush(evaluado));
     }
 
-    private void validarEmailUnico(String email, Long idExcluido) {
-        String normalizado = email.trim().toLowerCase();
-        boolean existe = evaluados.values().stream()
-                .anyMatch(e -> e.email().equals(normalizado) && !e.id().equals(idExcluido));
-        if (existe) {
-            throw new DuplicateResourceException("Ya existe un evaluado con el email " + normalizado);
-        }
+    @Transactional
+    public void eliminar(Long id) {
+        evaluadoRepository.delete(buscar(id));
+    }
+
+    private Evaluado buscar(Long id) {
+        return evaluadoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(RECURSO, id));
+    }
+
+    private void copiarDatos(EvaluadoDTO dto, Evaluado evaluado) {
+        evaluado.setNombre(dto.nombre().trim());
+        evaluado.setApellido(dto.apellido().trim());
+        evaluado.setEmail(normalizarEmail(dto.email()));
+        evaluado.setFechaNacimiento(dto.fechaNacimiento());
+        evaluado.setGenero(dto.genero());
+        evaluado.setNivelEducativo(dto.nivelEducativo());
+        evaluado.setActivo(dto.activo());
+    }
+
+    private String normalizarEmail(String email) {
+        return email.trim().toLowerCase();
+    }
+
+    private EvaluadoDTO toDTO(Evaluado evaluado) {
+        return new EvaluadoDTO(
+                evaluado.getId(),
+                evaluado.getNombre(),
+                evaluado.getApellido(),
+                evaluado.getEmail(),
+                evaluado.getFechaNacimiento(),
+                evaluado.getGenero(),
+                evaluado.getNivelEducativo(),
+                evaluado.getActivo(),
+                evaluado.getCreadoAt(),
+                evaluado.getActualizadoAt()
+        );
     }
 }

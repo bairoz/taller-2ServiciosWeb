@@ -1,6 +1,8 @@
 package com.psicometria.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.psicometria.api.models.Genero;
+import com.psicometria.api.models.NivelEducativo;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +11,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * DTO de la entidad evaluados (tabla {@code evaluados}).
@@ -49,14 +51,9 @@ public record EvaluadoDTO(
         Boolean activo,
 
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-        LocalDateTime creadoAt,
+        OffsetDateTime creadoAt,
 
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-        LocalDateTime actualizadoAt
+        OffsetDateTime actualizadoAt
 ) {
-
-    public EvaluadoDTO withAuditoria(Long id, LocalDateTime creadoAt, LocalDateTime actualizadoAt) {
-        return new EvaluadoDTO(id, nombre.trim(), apellido.trim(), email.trim().toLowerCase(), fechaNacimiento,
-                genero, nivelEducativo, activo, creadoAt, actualizadoAt);
-    }
 }
