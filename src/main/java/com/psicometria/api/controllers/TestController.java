@@ -1,6 +1,6 @@
 package com.psicometria.api.controllers;
 
-
+import com.psicometria.api.dto.RespuestaSimple;
 import com.psicometria.api.dto.TestDTO;
 import com.psicometria.api.services.TestService;
 import jakarta.validation.Valid;
@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Endpoints REST de la entidad Test.
@@ -67,12 +65,11 @@ public class TestController {
 
     /** DELETE /api/tests/{id} -> 200 OK con mensaje JSON, o 404 si el id no existe. */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> eliminar(@PathVariable Long id) {
+    public ResponseEntity<RespuestaSimple> eliminar(@PathVariable Long id) {
         testService.eliminar(id);
-        Map<String, Object> cuerpo = new LinkedHashMap<>();
-        cuerpo.put("estado", HttpStatus.OK.value());
-        cuerpo.put("mensaje", "Test eliminado correctamente");
-        cuerpo.put("id", id);
-        return ResponseEntity.ok(cuerpo);
+        return ResponseEntity.ok(new RespuestaSimple(
+                HttpStatus.OK.value(),
+                "Test eliminado correctamente",
+                id));
     }
 }
