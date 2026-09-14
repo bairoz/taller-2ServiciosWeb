@@ -1,39 +1,77 @@
 package com.psicometria.api.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.generator.EventType;
+import org.hibernate.type.SqlTypes;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 /**
- * Modelo de dominio de la entidad Test.
+ * Entidad JPA de la tabla "tests".
  *
- * Refleja la tabla "test" de la base de datos del proyecto:
- *   id, titulo, descripcion, tipo_test, duracion_minutos, activo, fecha_creacion
+ * La aplicacion corre con spring.jpa.hibernate.ddl-auto=validate, asi que
+ * cada campo de esta clase debe coincidir con su columna en 02_esquema.sql.
  *
- * Por ahora no lleva anotaciones de JPA porque la persistencia es en memoria.
- * Para conectar PostgreSQL revisen docs/GUIA-POSTGRESQL.md
+ * psicologo_id se mapea como columna simple (Long) y no como @ManyToOne para
+ * no depender de la entidad Psicologo, que se desarrolla en otra rama.
  */
+@Entity
+@Table(name = "tests")
 public class Test {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    /** FK hacia psicologos(id). Admite NULL: ON DELETE SET NULL. */
+    @Column(name = "psicologo_id")
+    private Long psicologoId;
+
+    @Column(name = "titulo", nullable = false, length = 255, unique = true)
     private String titulo;
+
+    @Column(name = "descripcion", columnDefinition = "text")
     private String descripcion;
-    private TipoTest tipoTest;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "categoria", nullable = false, columnDefinition = "categoria_test")
+    private CategoriaTest categoria;
+
+    /** NULL significa que el test no tiene limite de tiempo. */
+    @Column(name = "duracion_minutos")
     private Integer duracionMinutos;
-    private Boolean activo;
-    private LocalDateTime fechaCreacion;
+
+    @Column(name = "puntaje_aprobacion", nullable = false, precision = 5, scale = 2)
+    private BigDecimal puntajeAprobacion;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "visibilidad", nullable = false, columnDefinition = "visibilidad_test")
+    private VisibilidadTest visibilidad;
+
+    /** Lo asigna la base con DEFAULT now(); Hibernate solo lo lee. */
+    @Generated(event = EventType.INSERT)
+    @Column(name = "creado_at", insertable = false, updatable = false)
+    private OffsetDateTime creadoAt;
+
+    /** Lo mantiene el trigger de actualizado_at; Hibernate solo lo lee. */
+    @Generated(event = {EventType.INSERT, EventType.UPDATE})
+    @Column(name = "actualizado_at", insertable = false, updatable = false)
+    private OffsetDateTime actualizadoAt;
 
     public Test() {
-    }
-
-    public Test(Long id, String titulo, String descripcion, TipoTest tipoTest,
-                Integer duracionMinutos, Boolean activo, LocalDateTime fechaCreacion) {
-        this.id = id;
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.tipoTest = tipoTest;
-        this.duracionMinutos = duracionMinutos;
-        this.activo = activo;
-        this.fechaCreacion = fechaCreacion;
     }
 
     public Long getId() {
@@ -42,6 +80,14 @@ public class Test {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getPsicologoId() {
+        return psicologoId;
+    }
+
+    public void setPsicologoId(Long psicologoId) {
+        this.psicologoId = psicologoId;
     }
 
     public String getTitulo() {
@@ -60,12 +106,12 @@ public class Test {
         this.descripcion = descripcion;
     }
 
-    public TipoTest getTipoTest() {
-        return tipoTest;
+    public CategoriaTest getCategoria() {
+        return categoria;
     }
 
-    public void setTipoTest(TipoTest tipoTest) {
-        this.tipoTest = tipoTest;
+    public void setCategoria(CategoriaTest categoria) {
+        this.categoria = categoria;
     }
 
     public Integer getDuracionMinutos() {
@@ -76,19 +122,27 @@ public class Test {
         this.duracionMinutos = duracionMinutos;
     }
 
-    public Boolean getActivo() {
-        return activo;
+    public BigDecimal getPuntajeAprobacion() {
+        return puntajeAprobacion;
     }
 
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
+    public void setPuntajeAprobacion(BigDecimal puntajeAprobacion) {
+        this.puntajeAprobacion = puntajeAprobacion;
     }
 
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
+    public VisibilidadTest getVisibilidad() {
+        return visibilidad;
     }
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
+    public void setVisibilidad(VisibilidadTest visibilidad) {
+        this.visibilidad = visibilidad;
+    }
+
+    public OffsetDateTime getCreadoAt() {
+        return creadoAt;
+    }
+
+    public OffsetDateTime getActualizadoAt() {
+        return actualizadoAt;
     }
 }

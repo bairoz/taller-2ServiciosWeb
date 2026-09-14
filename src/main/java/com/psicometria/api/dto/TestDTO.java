@@ -1,71 +1,68 @@
 package com.psicometria.api.dto;
 
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.psicometria.api.models.CategoriaTest;
+import com.psicometria.api.models.VisibilidadTest;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 /**
- * Objeto de transferencia de datos de la entidad Test.
- * Se usa para recibir informacion (POST / PUT) y para devolverla en JSON.
+ * DTO de entrada y salida de la entidad Test.
  *
- * Atributos: id + psicologoId, titulo, descripcion, categoria,
- * duracionMinutos, puntajeAprobacion y visibilidad.
+ * Cada validacion refleja una restriccion real de la tabla "tests":
+ *  - titulo             VARCHAR(255) NOT NULL UNIQUE
+ *  - categoria          categoria_test NOT NULL
+ *  - duracion_minutos   INT CHECK (... > 0), admite NULL = sin limite
+ *  - puntaje_aprobacion NUMERIC(5,2) NOT NULL CHECK (BETWEEN 0 AND 100)
+ *  - visibilidad        visibilidad_test NOT NULL
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TestDTO {
 
-    /** Identificador. Lo asigna el servicio, por eso no se valida. */
+    /** Lo genera la base de datos; en POST y PUT se ignora. */
     private Long id;
 
-    @NotNull(message = "El identificador del psicologo es obligatorio")
     @Positive(message = "El identificador del psicologo debe ser un numero mayor que cero")
     private Long psicologoId;
 
     @NotBlank(message = "El titulo es obligatorio")
-    @Size(min = 5, max = 120, message = "El titulo debe tener entre 5 y 120 caracteres")
+    @Size(min = 5, max = 255, message = "El titulo debe tener entre 5 y 255 caracteres")
     private String titulo;
 
-    @NotBlank(message = "La descripcion es obligatoria")
-    @Size(min = 10, max = 500, message = "La descripcion debe tener entre 10 y 500 caracteres")
+    @Size(max = 2000, message = "La descripcion no debe superar los 2000 caracteres")
     private String descripcion;
 
-    @NotNull(message = "La categoria es obligatoria (ANSIEDAD, DEPRESION, ESTRES, AUTOESTIMA, PERSONALIDAD o HABILIDADES_SOCIALES)")
+    @NotNull(message = "La categoria es obligatoria (PERSONALIDAD, APTITUD, INTELIGENCIA, VOCACIONAL o EMOCIONAL)")
     private CategoriaTest categoria;
 
-    @NotNull(message = "La duracion en minutos es obligatoria")
-    @Min(value = 5, message = "La duracion minima es de 5 minutos")
-    @Max(value = 240, message = "La duracion maxima es de 240 minutos")
+    @Positive(message = "La duracion debe ser mayor que cero minutos")
+    @Max(value = 480, message = "La duracion no puede superar los 480 minutos")
     private Integer duracionMinutos;
 
     @NotNull(message = "El puntaje de aprobacion es obligatorio")
-    @DecimalMin(value = "0.01", message = "El puntaje de aprobacion debe ser mayor que cero")
+    @DecimalMin(value = "0.00", message = "El puntaje de aprobacion no puede ser negativo")
     @DecimalMax(value = "100.00", message = "El puntaje de aprobacion no puede ser mayor que 100")
+    @Digits(integer = 3, fraction = 2, message = "El puntaje admite hasta 3 enteros y 2 decimales")
     private BigDecimal puntajeAprobacion;
 
-    @NotNull(message = "La visibilidad es obligatoria (PUBLICO o PRIVADO)")
+    @NotNull(message = "La visibilidad es obligatoria (BORRADOR, PRIVADO o PUBLICO)")
     private VisibilidadTest visibilidad;
 
-    public TestDTO() {
-    }
+    /** Solo lectura: lo administran la base y el trigger. */
+    private OffsetDateTime creadoAt;
 
-    public TestDTO(Long id, Long psicologoId, String titulo, String descripcion,
-                   CategoriaTest categoria, Integer duracionMinutos,
-                   BigDecimal puntajeAprobacion, VisibilidadTest visibilidad) {
-        this.id = id;
-        this.psicologoId = psicologoId;
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.categoria = categoria;
-        this.duracionMinutos = duracionMinutos;
-        this.puntajeAprobacion = puntajeAprobacion;
-        this.visibilidad = visibilidad;
+    private OffsetDateTime actualizadoAt;
+
+    public TestDTO() {
     }
 
     public Long getId() {
@@ -130,5 +127,21 @@ public class TestDTO {
 
     public void setVisibilidad(VisibilidadTest visibilidad) {
         this.visibilidad = visibilidad;
+    }
+
+    public OffsetDateTime getCreadoAt() {
+        return creadoAt;
+    }
+
+    public void setCreadoAt(OffsetDateTime creadoAt) {
+        this.creadoAt = creadoAt;
+    }
+
+    public OffsetDateTime getActualizadoAt() {
+        return actualizadoAt;
+    }
+
+    public void setActualizadoAt(OffsetDateTime actualizadoAt) {
+        this.actualizadoAt = actualizadoAt;
     }
 }
