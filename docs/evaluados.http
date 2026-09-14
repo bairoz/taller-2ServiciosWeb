@@ -8,6 +8,7 @@ POST {{baseUrl}}
 Content-Type: application/json
 
 {
+  "institucionId": 1,
   "nombre": "Camila",
   "apellido": "Rojas",
   "email": "camila.rojas@correo.cl",
@@ -22,6 +23,7 @@ POST {{baseUrl}}
 Content-Type: application/json
 
 {
+  "institucionId": 0,
   "nombre": "",
   "apellido": "R",
   "email": "no-es-email",
@@ -33,6 +35,7 @@ POST {{baseUrl}}
 Content-Type: application/json
 
 {
+  "institucionId": 1,
   "nombre": "Camila",
   "apellido": "Soto",
   "email": "camila.rojas@correo.cl",
@@ -53,6 +56,7 @@ PUT {{baseUrl}}/1
 Content-Type: application/json
 
 {
+  "institucionId": 1,
   "nombre": "Camila",
   "apellido": "Rojas",
   "email": "camila.rojas@correo.cl",

@@ -7,6 +7,7 @@ Ruta base: `/api/evaluados`
 | Campo             | Tipo              | Validaciones                                              |
 |-------------------|-------------------|-----------------------------------------------------------|
 | `id`              | `Long`            | Solo lectura (lo asigna el servidor)                      |
+| `institucionId`   | `Long`            | Opcional, `@Positive` (FK a `instituciones`)              |
 | `nombre`          | `String`          | `@NotBlank`, `@Size(min = 2, max = 100)`, `@Pattern` (solo letras) |
 | `apellido`        | `String`          | `@NotBlank`, `@Size(min = 2, max = 100)`, `@Pattern` (solo letras) |
 | `email`           | `String`          | `@NotBlank`, `@Email`, `@Size(max = 255)`, único          |
@@ -39,6 +40,7 @@ Las mismas peticiones están en [`evaluados.http`](evaluados.http) (IntelliJ / V
 curl -i -X POST http://localhost:8080/api/evaluados \
   -H "Content-Type: application/json" \
   -d '{
+    "institucionId": 1,
     "nombre": "Camila",
     "apellido": "Rojas",
     "email": "camila.rojas@correo.cl",
@@ -54,6 +56,7 @@ Respuesta `201 Created`:
 ```json
 {
   "id": 1,
+  "institucionId": 1,
   "nombre": "Camila",
   "apellido": "Rojas",
   "email": "camila.rojas@correo.cl",
@@ -71,7 +74,7 @@ Respuesta `201 Created`:
 ```bash
 curl -i -X POST http://localhost:8080/api/evaluados \
   -H "Content-Type: application/json" \
-  -d '{"nombre": "", "email": "no-es-email", "fechaNacimiento": "2999-01-01"}'
+  -d '{"institucionId": 0, "nombre": "", "email": "no-es-email", "fechaNacimiento": "2999-01-01"}'
 ```
 
 Respuesta `400 Bad Request`:
@@ -84,6 +87,7 @@ Respuesta `400 Bad Request`:
   "message": "Error de validación",
   "path": "/api/evaluados",
   "errores": {
+    "institucionId": "El id de la institución debe ser un número positivo",
     "nombre": "El nombre es obligatorio",
     "apellido": "El apellido es obligatorio",
     "email": "El email debe tener un formato válido",

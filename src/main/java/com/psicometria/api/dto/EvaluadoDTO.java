@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -19,6 +20,9 @@ public record EvaluadoDTO(
 
         @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         Long id,
+
+        @Positive(message = "El id de la institución debe ser un número positivo")
+        Long institucionId,
 
         @NotBlank(message = "El nombre es obligatorio")
         @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
@@ -56,7 +60,7 @@ public record EvaluadoDTO(
 ) {
 
     public EvaluadoDTO withAuditoria(Long id, LocalDateTime creadoAt, LocalDateTime actualizadoAt) {
-        return new EvaluadoDTO(id, nombre.trim(), apellido.trim(), email.trim().toLowerCase(), fechaNacimiento,
+        return new EvaluadoDTO(id, institucionId, nombre.trim(), apellido.trim(), email.trim().toLowerCase(), fechaNacimiento,
                 genero, nivelEducativo, activo, creadoAt, actualizadoAt);
     }
 }
