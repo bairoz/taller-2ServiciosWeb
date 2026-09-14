@@ -1,4 +1,4 @@
-package com.psicometria.api.dto;
+package com.psicometria.api.models;
 
 public enum NivelEducativo {
     BASICA,
