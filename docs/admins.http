@@ -1,0 +1,111 @@
+@baseUrl = http://localhost:8080
+# Sustituir por el ID devuelto por POST antes de consultar, actualizar o eliminar.
+@adminId = 1
+
+### Crear un admin — 201 + Location. Usar usuario/email nuevos si ya existen.
+POST {{baseUrl}}/api/admins
+Content-Type: application/json
+
+{
+  "nombre": "Ana",
+  "apellido": "Pérez",
+  "usuario": "admin.taller",
+  "email": "admin.taller@example.com",
+  "password": "Clave123",
+  "rol": "ADMIN",
+  "activo": true,
+  "intentosFallidos": 0,
+  "ultimoAcceso": null
+}
+
+### Listar — 200, sin contraseñas
+GET {{baseUrl}}/api/admins
+
+### Consultar por ID — 200, sin contraseña
+GET {{baseUrl}}/api/admins/{{adminId}}
+
+### Actualizar todos los campos — 200
+PUT {{baseUrl}}/api/admins/{{adminId}}
+Content-Type: application/json
+
+{
+  "nombre": "Ana",
+  "apellido": "Pérez",
+  "usuario": "admin.taller",
+  "email": "admin.taller@example.com",
+  "password": "NuevaClave123",
+  "rol": "LECTOR",
+  "activo": false,
+  "intentosFallidos": 2,
+  "ultimoAcceso": "2025-01-15T10:30:00-06:00"
+}
+
+### Usuario duplicado — 409 (requiere la creación anterior)
+POST {{baseUrl}}/api/admins
+Content-Type: application/json
+
+{
+  "nombre": "Luis",
+  "apellido": "Rojas",
+  "usuario": "ADMIN.TALLER",
+  "email": "otro.admin@example.com",
+  "password": "Clave123",
+  "rol": "ADMIN",
+  "activo": true,
+  "intentosFallidos": 0
+}
+
+### Email duplicado — 409 (requiere la creación anterior)
+POST {{baseUrl}}/api/admins
+Content-Type: application/json
+
+{
+  "nombre": "Luis",
+  "apellido": "Rojas",
+  "usuario": "otro.admin",
+  "email": "ADMIN.TALLER@example.com",
+  "password": "Clave123",
+  "rol": "ADMIN",
+  "activo": true,
+  "intentosFallidos": 0
+}
+
+### Datos inválidos — 400 con errores por campo
+POST {{baseUrl}}/api/admins
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "apellido": "P",
+  "usuario": "",
+  "email": "correo-invalido",
+  "password": "corta",
+  "rol": "ADMIN",
+  "activo": null,
+  "intentosFallidos": -1,
+  "ultimoAcceso": "2999-01-01T00:00:00Z"
+}
+
+### Rol inválido — 400
+POST {{baseUrl}}/api/admins
+Content-Type: application/json
+
+{
+  "nombre": "Ana",
+  "apellido": "Pérez",
+  "usuario": "admin.nuevo",
+  "email": "nuevo@example.com",
+  "password": "Clave123",
+  "rol": "OTRO",
+  "activo": true,
+  "intentosFallidos": 0
+}
+
+### ID no numérico — 400
+GET {{baseUrl}}/api/admins/abc
+
+### Eliminar el admin de prueba — 204
+DELETE {{baseUrl}}/api/admins/{{adminId}}
+
+### Consultar después de eliminar — 404
+GET {{baseUrl}}/api/admins/{{adminId}}
