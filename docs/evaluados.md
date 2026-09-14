@@ -1,6 +1,17 @@
 # Entidad: Evaluados
 
-Ruta base: `/api/evaluados`
+Ruta base: `/api/evaluados` — Tabla: `evaluados`
+
+## Archivos
+
+| Capa        | Archivo                                    | Responsabilidad                                         |
+|-------------|--------------------------------------------|---------------------------------------------------------|
+| Model       | `models/Evaluado.java`                     | `@Entity` mapeada a la tabla `evaluados`                |
+| Model       | `models/Genero.java`, `models/NivelEducativo.java` | Enums mapeados a los tipos `ENUM` de PostgreSQL  |
+| Repository  | `repositories/EvaluadoRepository.java`     | `JpaRepository` + consultas por email                   |
+| DTO         | `dto/EvaluadoDTO.java`                     | Datos de entrada/salida y validaciones                  |
+| Service     | `services/EvaluadoService.java`            | Email único, normalización, conversión entidad ↔ DTO    |
+| Controller  | `controllers/EvaluadoController.java`      | Endpoints REST y `@Valid`                               |
 
 ## DTO (`EvaluadoDTO`)
 
@@ -14,8 +25,8 @@ Ruta base: `/api/evaluados`
 | `genero`          | `Genero` (enum)   | `@NotNull` — `MASCULINO`, `FEMENINO`, `NO_BINARIO`, `PREFIERO_NO_DECIR` |
 | `nivelEducativo`  | `NivelEducativo` (enum) | `@NotNull` — `BASICA`, `MEDIA`, `TECNICO`, `UNIVERSITARIO`, `POSTGRADO` |
 | `activo`          | `Boolean`         | `@NotNull`                                                |
-| `creadoAt`        | `LocalDateTime`   | Solo lectura                                              |
-| `actualizadoAt`   | `LocalDateTime`   | Solo lectura                                              |
+| `creadoAt`        | `OffsetDateTime`  | Solo lectura                                              |
+| `actualizadoAt`   | `OffsetDateTime`  | Solo lectura                                              |
 
 ## Endpoints
 
@@ -61,8 +72,8 @@ Respuesta `201 Created`:
   "genero": "FEMENINO",
   "nivelEducativo": "UNIVERSITARIO",
   "activo": true,
-  "creadoAt": "2026-09-14T10:15:30.123",
-  "actualizadoAt": "2026-09-14T10:15:30.123"
+  "creadoAt": "2026-09-14T10:15:30.123-03:00",
+  "actualizadoAt": "2026-09-14T10:15:30.123-03:00"
 }
 ```
 
@@ -97,10 +108,13 @@ Respuesta `400 Bad Request`:
 
 ## Pruebas
 
-`src/test/java/com/psicometria/api/controllers/EvaluadoControllerTest.java` cubre el CRUD completo, las validaciones, el `404` y el `409`.
+- `EvaluadoControllerTest` (`@WebMvcTest`, service mockeado): endpoints, códigos HTTP, validaciones, `404` y `409`.
+- `EvaluadoServiceTest` (Mockito, repository mockeado): normalización de datos, email único y recurso no encontrado.
+
+Ninguna prueba necesita PostgreSQL.
 
 ```bash
 ./mvnw test
 ```
 
-> Los datos se guardan en memoria dentro de `EvaluadoService`; se pierden al reiniciar la aplicación.
+> Los datos se guardan en PostgreSQL (`psicometria_db`). Para probar los endpoints a mano, primero crear la base con los scripts de `database/` y configurar la conexión (ver README).
