@@ -18,8 +18,8 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex,
-                                                          HttpServletRequest request) {
+    public ResponseEntity<RespuestaError> handleValidation(MethodArgumentNotValidException ex,
+                                                           HttpServletRequest request) {
         Map<String, String> errores = new LinkedHashMap<>();
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
             errores.putIfAbsent(fieldError.getField(), fieldError.getDefaultMessage());
@@ -28,30 +28,30 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleNotReadable(HttpMessageNotReadableException ex,
-                                                           HttpServletRequest request) {
+    public ResponseEntity<RespuestaError> handleNotReadable(HttpMessageNotReadableException ex,
+                                                            HttpServletRequest request) {
         return build(HttpStatus.BAD_REQUEST, "El cuerpo de la petición es inválido o tiene un formato incorrecto", request, null);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
-                                                            HttpServletRequest request) {
+    public ResponseEntity<RespuestaError> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
+                                                             HttpServletRequest request) {
         return build(HttpStatus.BAD_REQUEST, "Valor inválido para el parámetro '" + ex.getName() + "'", request, null);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<RespuestaError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), request, null);
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateResourceException ex, HttpServletRequest request) {
+    public ResponseEntity<RespuestaError> handleDuplicate(DuplicateResourceException ex, HttpServletRequest request) {
         return build(HttpStatus.CONFLICT, ex.getMessage(), request, null);
     }
 
-    private ResponseEntity<ErrorResponse> build(HttpStatus status, String message, HttpServletRequest request,
-                                                Map<String, String> errores) {
-        ErrorResponse body = new ErrorResponse(
+    private ResponseEntity<RespuestaError> build(HttpStatus status, String message, HttpServletRequest request,
+                                                 Map<String, String> errores) {
+        RespuestaError body = new RespuestaError(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
