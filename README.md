@@ -76,7 +76,7 @@ Si el modelo cambia, ejecutar `database/00_reiniciar_esquema.sql` sobre `psicome
 | Entidad         | Atributos (además de `id`)                                                                                         |
 |-----------------|--------------------------------------------------------------------------------------------------------------------|
 | `evaluados`     | `nombre`, `apellido`, `email`, `fecha_nacimiento`, `genero`, `nivel_educativo`, `activo`                           |
-| `admins`        | `nombre`, `apellido`, `usuario`, `email`, `password_hash`, `rol`, `activo`, `intentos_fallidos`, `ultimo_acceso`   |
+| `admins`        | `nombre`, `apellido`, `usuario`, `email`, `password`, `rol`, `activo`, `intentos_fallidos`, `ultimo_acceso`        |
 | `psicologos`    | `nombre`, `apellido`, `email`, `numero_registro`, `especialidad`, `anios_experiencia`, `fecha_titulacion`, `disponible` |
 | `tests`         | `psicologo_id`, `titulo`, `descripcion`, `categoria`, `duracion_minutos`, `puntaje_aprobacion`, `visibilidad`      |
 | `preguntas`     | `test_id`, `enunciado`, `tipo`, `opciones`, `respuesta_correcta`, `puntaje`, `orden`, `obligatoria`                 |
@@ -92,7 +92,7 @@ Todas incluyen texto, número, fecha o decimal, booleano y enumeración.
 
 - **5 entidades CRUD**: se agrega `psicologos` y `admins` pasa a ser entidad principal; `tokens_acceso` y `aplicaciones_test` quedan como tablas de soporte.
 - La plataforma atiende a **una sola institución**, por lo que no se modela una tabla de instituciones.
-- `admins`: se agregan `nombre`, `apellido`, `rol` (`SUPER_ADMIN`, `ADMIN`, `LECTOR`), `intentos_fallidos`, `ultimo_acceso` y `actualizado_at`; `email` es `UNIQUE`.
+- `admins`: se agregan `nombre`, `apellido`, `rol` (`SUPER_ADMIN`, `ADMIN`, `LECTOR`), `intentos_fallidos`, `ultimo_acceso` y `actualizado_at`; `email` es `UNIQUE`. Por ser un taller de ejemplo, `password_hash` se reemplaza por `password` en texto plano (mínimo 8 caracteres); en un sistema real debe guardarse un hash (p. ej. BCrypt).
 - Claves primarias `BIGINT GENERATED ALWAYS AS IDENTITY` (estándar SQL, recomendado sobre `SERIAL`; se mapea a `Long` en Java).
 - Campos de estado como **tipos `ENUM`** en vez de `VARCHAR` libre.
 - `evaluados`: `edad` se reemplaza por `fecha_nacimiento`, se separa `apellido`, se agregan `nivel_educativo` y `activo`; `email` es `UNIQUE`.
@@ -120,7 +120,7 @@ erDiagram
         varchar apellido
         varchar usuario UK
         varchar email UK
-        varchar password_hash
+        varchar password
         enum rol
         boolean activo
         int intentos_fallidos
@@ -216,7 +216,7 @@ CREATE TABLE admins (
   apellido           VARCHAR(100) NOT NULL,
   usuario            VARCHAR(50)  NOT NULL UNIQUE,
   email              VARCHAR(255) NOT NULL UNIQUE,
-  password_hash      VARCHAR(255) NOT NULL,
+  password           VARCHAR(100) NOT NULL CHECK (char_length(password) >= 8), -- texto plano: solo para el taller
   rol                rol_admin    NOT NULL DEFAULT 'ADMIN',
   activo             BOOLEAN      NOT NULL DEFAULT TRUE,
   intentos_fallidos  INT          NOT NULL DEFAULT 0 CHECK (intentos_fallidos >= 0),

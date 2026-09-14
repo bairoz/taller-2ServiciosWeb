@@ -54,7 +54,7 @@ CREATE TABLE admins (
   apellido           VARCHAR(100) NOT NULL,
   usuario            VARCHAR(50)  NOT NULL UNIQUE,
   email              VARCHAR(255) NOT NULL UNIQUE,
-  password_hash      VARCHAR(255) NOT NULL,
+  password           VARCHAR(100) NOT NULL CHECK (char_length(password) >= 8), -- texto plano: solo para el taller
   rol                rol_admin    NOT NULL DEFAULT 'ADMIN',
   activo             BOOLEAN      NOT NULL DEFAULT TRUE,
   intentos_fallidos  INT          NOT NULL DEFAULT 0 CHECK (intentos_fallidos >= 0),
