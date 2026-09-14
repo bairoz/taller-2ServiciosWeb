@@ -28,7 +28,6 @@ class EvaluadoControllerTest {
 
     private static final String EVALUADO_VALIDO = """
             {
-              "institucionId": 1,
               "nombre": "Camila",
               "apellido": "Rojas",
               "email": "Camila.Rojas@correo.cl",
@@ -56,7 +55,6 @@ class EvaluadoControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", containsString("/api/evaluados/1")))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.institucionId").value(1))
                 .andExpect(jsonPath("$.email").value("camila.rojas@correo.cl"))
                 .andExpect(jsonPath("$.genero").value("FEMENINO"))
                 .andExpect(jsonPath("$.activo").value(true))
@@ -67,7 +65,6 @@ class EvaluadoControllerTest {
     void crearEvaluadoInvalidoRetorna400ConErroresPorCampo() throws Exception {
         String invalido = """
                 {
-                  "institucionId": 0,
                   "nombre": "",
                   "apellido": "R",
                   "email": "no-es-email",
@@ -78,7 +75,6 @@ class EvaluadoControllerTest {
         mockMvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(invalido))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Error de validación"))
-                .andExpect(jsonPath("$.errores.institucionId").value("El id de la institución debe ser un número positivo"))
                 .andExpect(jsonPath("$.errores.nombre").exists())
                 .andExpect(jsonPath("$.errores.apellido").exists())
                 .andExpect(jsonPath("$.errores.email").value("El email debe tener un formato válido"))
