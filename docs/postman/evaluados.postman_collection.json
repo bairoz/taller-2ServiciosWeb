@@ -1,0 +1,281 @@
+{
+  "info": {
+    "name": "Psicometría API - Evaluados",
+    "description": "CRUD y validaciones de /api/evaluados.\n\nEjecutar en orden (Run collection): la petición 'Crear evaluado válido' guarda el id creado en la variable {{evaluadoId}} que usan las siguientes.\n\nRequisitos: base psicometria_db creada con los scripts de database/ (incluye 03_datos_prueba.sql) y la API corriendo en {{baseUrl}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "evaluadoId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Listar evaluados",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Devuelve un arreglo', () => pm.expect(pm.response.json()).to.be.an('array'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/evaluados"
+      }
+    },
+    {
+      "name": "2. Crear evaluado válido",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.test('Header Location', () => pm.response.to.have.header('Location'));",
+              "const body = pm.response.json();",
+              "pm.test('Email normalizado a minúsculas', () => pm.expect(body.email).to.eql(body.email.toLowerCase()));",
+              "pm.test('Tiene id y fechas de auditoría', () => {",
+              "  pm.expect(body.id).to.be.a('number');",
+              "  pm.expect(body.creadoAt).to.be.a('string');",
+              "});",
+              "pm.collectionVariables.set('evaluadoId', body.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/evaluados",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Tomás\",\n  \"apellido\": \"Núñez\",\n  \"email\": \"Tomas.Nunez.{{$timestamp}}@correo.cl\",\n  \"fechaNacimiento\": \"2006-05-10\",\n  \"genero\": \"MASCULINO\",\n  \"nivelEducativo\": \"MEDIA\",\n  \"activo\": true\n}"
+        }
+      }
+    },
+    {
+      "name": "3. Obtener evaluado por id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Id coincide', () => pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get('evaluadoId'))));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/evaluados/{{evaluadoId}}"
+      }
+    },
+    {
+      "name": "4. Actualizar evaluado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Datos actualizados', () => {",
+              "  pm.expect(body.nivelEducativo).to.eql('UNIVERSITARIO');",
+              "  pm.expect(body.activo).to.eql(false);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/evaluados/{{evaluadoId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Tomás\",\n  \"apellido\": \"Núñez Lagos\",\n  \"email\": \"tomas.nunez.{{$timestamp}}@correo.cl\",\n  \"fechaNacimiento\": \"2006-05-10\",\n  \"genero\": \"MASCULINO\",\n  \"nivelEducativo\": \"UNIVERSITARIO\",\n  \"activo\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "5. Crear con datos inválidos (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));",
+              "const errores = pm.response.json().errores;",
+              "pm.test('Informa error por cada campo', () => {",
+              "  ['nombre', 'apellido', 'email', 'fechaNacimiento', 'genero', 'nivelEducativo', 'activo']",
+              "    .forEach(campo => pm.expect(errores).to.have.property(campo));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/evaluados",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"\",\n  \"apellido\": \"R\",\n  \"email\": \"no-es-email\",\n  \"fechaNacimiento\": \"2999-01-01\",\n  \"activo\": null\n}"
+        }
+      }
+    },
+    {
+      "name": "6. Crear con nombre con números (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));",
+              "pm.test('Error en nombre', () => pm.expect(pm.response.json().errores).to.have.property('nombre'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/evaluados",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Camila123\",\n  \"apellido\": \"Rojas\",\n  \"email\": \"camila.123@correo.cl\",\n  \"fechaNacimiento\": \"2005-03-21\",\n  \"genero\": \"FEMENINO\",\n  \"nivelEducativo\": \"MEDIA\",\n  \"activo\": true\n}"
+        }
+      }
+    },
+    {
+      "name": "7. Crear con enum inválido (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/evaluados",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Camila\",\n  \"apellido\": \"Rojas\",\n  \"email\": \"camila.enum@correo.cl\",\n  \"fechaNacimiento\": \"2005-03-21\",\n  \"genero\": \"OTRO\",\n  \"nivelEducativo\": \"MEDIA\",\n  \"activo\": true\n}"
+        }
+      }
+    },
+    {
+      "name": "8. Crear con email duplicado (409)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 409', () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/evaluados",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Camila\",\n  \"apellido\": \"Rojas\",\n  \"email\": \"CAMILA.ROJAS@correo.cl\",\n  \"fechaNacimiento\": \"2009-03-21\",\n  \"genero\": \"FEMENINO\",\n  \"nivelEducativo\": \"MEDIA\",\n  \"activo\": true\n}"
+        },
+        "description": "Usa el email de un evaluado de 03_datos_prueba.sql (en mayúsculas: la verificación ignora mayúsculas/minúsculas)."
+      }
+    },
+    {
+      "name": "9. Obtener id inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/evaluados/999999"
+      }
+    },
+    {
+      "name": "10. Obtener con id no numérico (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/evaluados/abc"
+      }
+    },
+    {
+      "name": "11. Eliminar evaluado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 204', () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/evaluados/{{evaluadoId}}"
+      }
+    },
+    {
+      "name": "12. Obtener evaluado eliminado (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/evaluados/{{evaluadoId}}"
+      }
+    }
+  ]
+}
