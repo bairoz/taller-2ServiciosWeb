@@ -51,7 +51,7 @@ La API queda disponible en `http://localhost:8080`.
 | # | Entidad         | Ruta base             | Rama                     |
 |---|-----------------|-----------------------|--------------------------|
 | 1 | `evaluados`     | `/api/evaluados`      | `feature/evaluados`      |
-| 2 | `instituciones` | `/api/instituciones`  | `feature/instituciones`  |
+| 2 | `admins`        | `/api/admins`         | `feature/admins`         |
 | 3 | `psicologos`    | `/api/psicologos`     | `feature/psicologos`     |
 | 4 | `tests`         | `/api/tests`          | `feature/tests`          |
 | 5 | `preguntas`     | `/api/preguntas`      | `feature/preguntas`      |
@@ -75,8 +75,8 @@ Si el modelo cambia, ejecutar `database/00_reiniciar_esquema.sql` sobre `psicome
 
 | Entidad         | Atributos (además de `id`)                                                                                         |
 |-----------------|--------------------------------------------------------------------------------------------------------------------|
-| `evaluados`     | `institucion_id`, `nombre`, `apellido`, `email`, `fecha_nacimiento`, `genero`, `nivel_educativo`, `activo`         |
-| `instituciones` | `nombre`, `tipo`, `ciudad`, `direccion`, `email_contacto`, `telefono`, `cantidad_estudiantes`, `fecha_convenio`, `activa` |
+| `evaluados`     | `nombre`, `apellido`, `email`, `fecha_nacimiento`, `genero`, `nivel_educativo`, `activo`                           |
+| `admins`        | `nombre`, `apellido`, `usuario`, `email`, `password_hash`, `rol`, `activo`, `intentos_fallidos`, `ultimo_acceso`   |
 | `psicologos`    | `nombre`, `apellido`, `email`, `numero_registro`, `especialidad`, `anios_experiencia`, `fecha_titulacion`, `disponible` |
 | `tests`         | `psicologo_id`, `titulo`, `descripcion`, `categoria`, `duracion_minutos`, `puntaje_aprobacion`, `visibilidad`      |
 | `preguntas`     | `test_id`, `enunciado`, `tipo`, `opciones`, `respuesta_correcta`, `puntaje`, `orden`, `obligatoria`                 |
@@ -85,16 +85,17 @@ Todas incluyen texto, número, fecha o decimal, booleano y enumeración.
 
 ### Tablas de soporte (sin CRUD en el taller)
 
-- `admins`: usuarios administradores (autenticación).
 - `tokens_acceso`: PIN de un solo uso para rendir tests privados.
 - `aplicaciones_test`: registro de cada vez que un evaluado rinde un test.
 
 ### Cambios respecto al modelo original
 
-- **5 entidades CRUD**: se agregan `instituciones` y `psicologos`; `tokens_acceso` y `aplicaciones_test` quedan como tablas de soporte.
+- **5 entidades CRUD**: se agrega `psicologos` y `admins` pasa a ser entidad principal; `tokens_acceso` y `aplicaciones_test` quedan como tablas de soporte.
+- La plataforma atiende a **una sola institución**, por lo que no se modela una tabla de instituciones.
+- `admins`: se agregan `nombre`, `apellido`, `rol` (`SUPER_ADMIN`, `ADMIN`, `LECTOR`), `intentos_fallidos`, `ultimo_acceso` y `actualizado_at`; `email` es `UNIQUE`.
 - Claves primarias `BIGINT GENERATED ALWAYS AS IDENTITY` (estándar SQL, recomendado sobre `SERIAL`; se mapea a `Long` en Java).
 - Campos de estado como **tipos `ENUM`** en vez de `VARCHAR` libre.
-- `evaluados`: `edad` se reemplaza por `fecha_nacimiento`, se separa `apellido`, se agregan `institucion_id`, `nivel_educativo` y `activo`; `email` es `UNIQUE`.
+- `evaluados`: `edad` se reemplaza por `fecha_nacimiento`, se separa `apellido`, se agregan `nivel_educativo` y `activo`; `email` es `UNIQUE`.
 - `tests`: se agregan `psicologo_id` (autor), `categoria` y `puntaje_aprobacion`; se elimina `requiere_pin` (redundante con `visibilidad = 'PRIVADO'`).
 - `preguntas`: se agregan `puntaje` y `obligatoria`; `orden` es único por test y `opciones` debe ser un arreglo JSON.
 - `tokens_acceso` absorbe `historial_usos_tokens` (`evaluado_id`, `fecha_uso`) y agrega `fecha_expiracion`.
@@ -105,7 +106,6 @@ Todas incluyen texto, número, fecha o decimal, booleano y enumeración.
 
 ```mermaid
 erDiagram
-    INSTITUCIONES |o--o{ EVALUADOS : "pertenece"
     PSICOLOGOS |o--o{ TESTS : "diseña"
     TESTS ||--o{ PREGUNTAS : contiene
     TESTS ||--o{ TOKENS_ACCESO : genera
@@ -114,21 +114,20 @@ erDiagram
     EVALUADOS |o--o{ TOKENS_ACCESO : usa
     TOKENS_ACCESO |o--o| APLICACIONES_TEST : habilita
 
-    INSTITUCIONES {
+    ADMINS {
         bigint id PK
-        varchar nombre UK
-        enum tipo
-        varchar ciudad
-        varchar direccion
-        varchar email_contacto
-        varchar telefono
-        int cantidad_estudiantes
-        date fecha_convenio
-        boolean activa
+        varchar nombre
+        varchar apellido
+        varchar usuario UK
+        varchar email UK
+        varchar password_hash
+        enum rol
+        boolean activo
+        int intentos_fallidos
+        timestamptz ultimo_acceso
     }
     EVALUADOS {
         bigint id PK
-        bigint institucion_id FK
         varchar nombre
         varchar apellido
         varchar email UK
@@ -202,7 +201,7 @@ Resumen de las tablas. El script completo (función, triggers e índices) está 
 -- Tipos enumerados
 CREATE TYPE genero_evaluado        AS ENUM ('MASCULINO', 'FEMENINO', 'NO_BINARIO', 'PREFIERO_NO_DECIR');
 CREATE TYPE nivel_educativo        AS ENUM ('BASICA', 'MEDIA', 'TECNICO', 'UNIVERSITARIO', 'POSTGRADO');
-CREATE TYPE tipo_institucion       AS ENUM ('COLEGIO', 'LICEO', 'INSTITUTO_PROFESIONAL', 'CENTRO_FORMACION_TECNICA', 'UNIVERSIDAD');
+CREATE TYPE rol_admin              AS ENUM ('SUPER_ADMIN', 'ADMIN', 'LECTOR');
 CREATE TYPE especialidad_psicologo AS ENUM ('EDUCACIONAL', 'CLINICA', 'ORGANIZACIONAL', 'NEUROPSICOLOGIA', 'VOCACIONAL');
 CREATE TYPE categoria_test         AS ENUM ('PERSONALIDAD', 'APTITUD', 'INTELIGENCIA', 'VOCACIONAL', 'EMOCIONAL');
 CREATE TYPE visibilidad_test       AS ENUM ('BORRADOR', 'PRIVADO', 'PUBLICO');
@@ -211,24 +210,23 @@ CREATE TYPE estado_aplicacion      AS ENUM ('EN_PROGRESO', 'COMPLETADO', 'ABANDO
 
 -- ===================== ENTIDADES PRINCIPALES =====================
 
-CREATE TABLE instituciones (
-  id                    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  nombre                VARCHAR(150)     NOT NULL UNIQUE,
-  tipo                  tipo_institucion NOT NULL,
-  ciudad                VARCHAR(100)     NOT NULL,
-  direccion             VARCHAR(255),
-  email_contacto        VARCHAR(255)     NOT NULL,
-  telefono              VARCHAR(20),
-  cantidad_estudiantes  INT              NOT NULL DEFAULT 0 CHECK (cantidad_estudiantes >= 0),
-  fecha_convenio        DATE             NOT NULL,
-  activa                BOOLEAN          NOT NULL DEFAULT TRUE,
-  creado_at             TIMESTAMPTZ      NOT NULL DEFAULT now(),
-  actualizado_at        TIMESTAMPTZ      NOT NULL DEFAULT now()
+CREATE TABLE admins (
+  id                 BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nombre             VARCHAR(100) NOT NULL,
+  apellido           VARCHAR(100) NOT NULL,
+  usuario            VARCHAR(50)  NOT NULL UNIQUE,
+  email              VARCHAR(255) NOT NULL UNIQUE,
+  password_hash      VARCHAR(255) NOT NULL,
+  rol                rol_admin    NOT NULL DEFAULT 'ADMIN',
+  activo             BOOLEAN      NOT NULL DEFAULT TRUE,
+  intentos_fallidos  INT          NOT NULL DEFAULT 0 CHECK (intentos_fallidos >= 0),
+  ultimo_acceso      TIMESTAMPTZ,
+  creado_at          TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  actualizado_at     TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
 CREATE TABLE evaluados (
   id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  institucion_id    BIGINT          REFERENCES instituciones(id) ON DELETE SET NULL,
   nombre            VARCHAR(100)    NOT NULL,
   apellido          VARCHAR(100)    NOT NULL,
   email             VARCHAR(255)    NOT NULL UNIQUE,
@@ -282,15 +280,6 @@ CREATE TABLE preguntas (
 );
 
 -- ===================== TABLAS DE SOPORTE =====================
-
-CREATE TABLE admins (
-  id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  usuario        VARCHAR(100) NOT NULL UNIQUE,
-  email          VARCHAR(255) NOT NULL UNIQUE,
-  password_hash  VARCHAR(255) NOT NULL,
-  activo         BOOLEAN      NOT NULL DEFAULT TRUE,
-  creado_at      TIMESTAMPTZ  NOT NULL DEFAULT now()
-);
 
 CREATE TABLE tokens_acceso (
   id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

@@ -7,13 +7,13 @@
 --
 --  Entidades principales (CRUD, una por integrante):
 --    1. evaluados      -> estudiantes que rinden los tests
---    2. instituciones  -> establecimientos a los que pertenecen los evaluados
+--    2. admins         -> usuarios que administran la plataforma
 --    3. psicologos     -> profesionales que diseñan los tests
 --    4. tests          -> instrumentos psicométricos
 --    5. preguntas      -> ítems de cada test
 --
 --  Tablas de soporte (usadas por la lógica de la plataforma, sin CRUD propio):
---    admins, tokens_acceso, aplicaciones_test
+--    tokens_acceso, aplicaciones_test
 -- =====================================================================
 
 BEGIN;
@@ -23,7 +23,7 @@ BEGIN;
 -- ---------------------------------------------------------------------
 CREATE TYPE genero_evaluado        AS ENUM ('MASCULINO', 'FEMENINO', 'NO_BINARIO', 'PREFIERO_NO_DECIR');
 CREATE TYPE nivel_educativo        AS ENUM ('BASICA', 'MEDIA', 'TECNICO', 'UNIVERSITARIO', 'POSTGRADO');
-CREATE TYPE tipo_institucion       AS ENUM ('COLEGIO', 'LICEO', 'INSTITUTO_PROFESIONAL', 'CENTRO_FORMACION_TECNICA', 'UNIVERSIDAD');
+CREATE TYPE rol_admin              AS ENUM ('SUPER_ADMIN', 'ADMIN', 'LECTOR');
 CREATE TYPE especialidad_psicologo AS ENUM ('EDUCACIONAL', 'CLINICA', 'ORGANIZACIONAL', 'NEUROPSICOLOGIA', 'VOCACIONAL');
 CREATE TYPE categoria_test         AS ENUM ('PERSONALIDAD', 'APTITUD', 'INTELIGENCIA', 'VOCACIONAL', 'EMOCIONAL');
 CREATE TYPE visibilidad_test       AS ENUM ('BORRADOR', 'PRIVADO', 'PUBLICO');
@@ -46,21 +46,21 @@ $$ LANGUAGE plpgsql;
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
---  instituciones
+--  admins
 -- ---------------------------------------------------------------------
-CREATE TABLE instituciones (
-  id                    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  nombre                VARCHAR(150)     NOT NULL UNIQUE,
-  tipo                  tipo_institucion NOT NULL,
-  ciudad                VARCHAR(100)     NOT NULL,
-  direccion             VARCHAR(255),
-  email_contacto        VARCHAR(255)     NOT NULL,
-  telefono              VARCHAR(20),
-  cantidad_estudiantes  INT              NOT NULL DEFAULT 0 CHECK (cantidad_estudiantes >= 0),
-  fecha_convenio        DATE             NOT NULL,
-  activa                BOOLEAN          NOT NULL DEFAULT TRUE,
-  creado_at             TIMESTAMPTZ      NOT NULL DEFAULT now(),
-  actualizado_at        TIMESTAMPTZ      NOT NULL DEFAULT now()
+CREATE TABLE admins (
+  id                 BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nombre             VARCHAR(100) NOT NULL,
+  apellido           VARCHAR(100) NOT NULL,
+  usuario            VARCHAR(50)  NOT NULL UNIQUE,
+  email              VARCHAR(255) NOT NULL UNIQUE,
+  password_hash      VARCHAR(255) NOT NULL,
+  rol                rol_admin    NOT NULL DEFAULT 'ADMIN',
+  activo             BOOLEAN      NOT NULL DEFAULT TRUE,
+  intentos_fallidos  INT          NOT NULL DEFAULT 0 CHECK (intentos_fallidos >= 0),
+  ultimo_acceso      TIMESTAMPTZ,
+  creado_at          TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  actualizado_at     TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
 -- ---------------------------------------------------------------------
@@ -68,7 +68,6 @@ CREATE TABLE instituciones (
 -- ---------------------------------------------------------------------
 CREATE TABLE evaluados (
   id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  institucion_id    BIGINT          REFERENCES instituciones(id) ON DELETE SET NULL,
   nombre            VARCHAR(100)    NOT NULL,
   apellido          VARCHAR(100)    NOT NULL,
   email             VARCHAR(255)    NOT NULL UNIQUE,
@@ -138,18 +137,6 @@ CREATE TABLE preguntas (
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
---  admins (autenticación)
--- ---------------------------------------------------------------------
-CREATE TABLE admins (
-  id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  usuario        VARCHAR(100) NOT NULL UNIQUE,
-  email          VARCHAR(255) NOT NULL UNIQUE,
-  password_hash  VARCHAR(255) NOT NULL,
-  activo         BOOLEAN      NOT NULL DEFAULT TRUE,
-  creado_at      TIMESTAMPTZ  NOT NULL DEFAULT now()
-);
-
--- ---------------------------------------------------------------------
 --  tokens_acceso (PIN de un solo uso para tests privados)
 -- ---------------------------------------------------------------------
 CREATE TABLE tokens_acceso (
@@ -185,7 +172,7 @@ CREATE TABLE aplicaciones_test (
 -- ---------------------------------------------------------------------
 --  Triggers de actualizado_at
 -- ---------------------------------------------------------------------
-CREATE TRIGGER trg_instituciones_actualizado BEFORE UPDATE ON instituciones
+CREATE TRIGGER trg_admins_actualizado BEFORE UPDATE ON admins
   FOR EACH ROW EXECUTE FUNCTION set_actualizado_at();
 CREATE TRIGGER trg_evaluados_actualizado BEFORE UPDATE ON evaluados
   FOR EACH ROW EXECUTE FUNCTION set_actualizado_at();
@@ -199,7 +186,6 @@ CREATE TRIGGER trg_aplicaciones_actualizado BEFORE UPDATE ON aplicaciones_test
 -- ---------------------------------------------------------------------
 --  Índices sobre claves foráneas
 -- ---------------------------------------------------------------------
-CREATE INDEX idx_evaluados_institucion ON evaluados (institucion_id);
 CREATE INDEX idx_tests_psicologo       ON tests (psicologo_id);
 CREATE INDEX idx_tokens_test           ON tokens_acceso (test_id);
 CREATE INDEX idx_tokens_evaluado       ON tokens_acceso (evaluado_id);
