@@ -1,0 +1,72 @@
+@baseUrl = http://localhost:8080
+# Sustituir por el ID devuelto por POST antes de consultar, actualizar o eliminar.
+@preguntaId = 1
+
+### Crear una pregunta — 201 + body con id. Usar un "orden" libre para el testId elegido (el 1 y el 3 ya tienen orden 1-3 ocupados por datos de prueba).
+POST {{baseUrl}}/api/preguntas
+Content-Type: application/json
+
+{
+  "testId": 1,
+  "enunciado": "¿Cuál de las siguientes emociones se asocia principalmente con la pérdida?",
+  "tipo": "OPCION_MULTIPLE",
+  "opciones": ["Alegría", "Tristeza", "Sorpresa", "Asco"],
+  "respuestaCorrecta": "Tristeza",
+  "puntaje": 2.5,
+  "orden": 10,
+  "obligatoria": true
+}
+
+### Listar todas las preguntas — 200
+GET {{baseUrl}}/api/preguntas
+
+### Consultar por ID — 200
+GET {{baseUrl}}/api/preguntas/{{preguntaId}}
+
+### Actualizar una pregunta existente — 200
+PUT {{baseUrl}}/api/preguntas/{{preguntaId}}
+Content-Type: application/json
+
+{
+  "testId": 1,
+  "enunciado": "¿Cuál de las siguientes emociones se asocia principalmente con la pérdida? (revisado)",
+  "tipo": "OPCION_MULTIPLE",
+  "opciones": ["Alegría", "Tristeza", "Sorpresa", "Asco", "Miedo"],
+  "respuestaCorrecta": "Tristeza",
+  "puntaje": 3.0,
+  "orden": 10,
+  "obligatoria": true
+}
+
+### Datos inválidos: campos obligatorios faltantes/incorrectos — 400 con errores por campo
+POST {{baseUrl}}/api/preguntas
+Content-Type: application/json
+
+{
+  "testId": 2,
+  "tipo": "VERDADERO_FALSO",
+  "puntaje": -1,
+  "orden": 0
+}
+
+### Orden duplicado en el mismo test — 409 (el test 3 ya tiene una pregunta con orden 1 en los datos de prueba)
+POST {{baseUrl}}/api/preguntas
+Content-Type: application/json
+
+{
+  "testId": 3,
+  "enunciado": "¿Cuál es tu área de interés vocacional preferida?",
+  "tipo": "RESPUESTA_ABIERTA",
+  "puntaje": 1.0,
+  "orden": 1,
+  "obligatoria": false
+}
+
+### Eliminar la pregunta de prueba — 200
+DELETE {{baseUrl}}/api/preguntas/{{preguntaId}}
+
+### Consultar después de eliminar — 404
+GET {{baseUrl}}/api/preguntas/{{preguntaId}}
+
+### ID inexistente — 404
+GET {{baseUrl}}/api/preguntas/9999
