@@ -1,0 +1,256 @@
+{
+  "info": {
+    "name": "Taller Servicios Web - Preguntas",
+    "description": "8 pruebas del CRUD de /api/preguntas: 5 exitosas, 2 con datos inválidos, 1 con ID inexistente. Usa el environment 'Preguntas - Local' junto con esta colección.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - POST Crear pregunta",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 201', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('El body incluye un id', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.id).to.be.a('number');",
+              "    pm.environment.set('preguntaId', json.id);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"testId\": 1,\n  \"enunciado\": \"¿Cuál de las siguientes emociones se asocia principalmente con la pérdida?\",\n  \"tipo\": \"OPCION_MULTIPLE\",\n  \"opciones\": [\"Alegría\", \"Tristeza\", \"Sorpresa\", \"Asco\"],\n  \"respuestaCorrecta\": \"Tristeza\",\n  \"puntaje\": 2.5,\n  \"orden\": 10,\n  \"obligatoria\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/preguntas",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "preguntas"]
+        }
+      }
+    },
+    {
+      "name": "02 - GET Listar todas las preguntas",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('La respuesta es un arreglo', function () {",
+              "    pm.expect(pm.response.json()).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/preguntas",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "preguntas"]
+        }
+      }
+    },
+    {
+      "name": "03 - GET Pregunta por ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('El id coincide con el solicitado', function () {",
+              "    pm.expect(pm.response.json().id).to.eql(parseInt(pm.environment.get('preguntaId')));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/preguntas/{{preguntaId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "preguntas", "{{preguntaId}}"]
+        }
+      }
+    },
+    {
+      "name": "04 - PUT Actualizar pregunta",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('El enunciado quedó actualizado', function () {",
+              "    pm.expect(pm.response.json().enunciado).to.include('revisado');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"testId\": 1,\n  \"enunciado\": \"¿Cuál de las siguientes emociones se asocia principalmente con la pérdida? (revisado)\",\n  \"tipo\": \"OPCION_MULTIPLE\",\n  \"opciones\": [\"Alegría\", \"Tristeza\", \"Sorpresa\", \"Asco\", \"Miedo\"],\n  \"respuestaCorrecta\": \"Tristeza\",\n  \"puntaje\": 3.0,\n  \"orden\": 10,\n  \"obligatoria\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/preguntas/{{preguntaId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "preguntas", "{{preguntaId}}"]
+        }
+      }
+    },
+    {
+      "name": "05 - DELETE Eliminar pregunta",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200 o 204', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/preguntas/{{preguntaId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "preguntas", "{{preguntaId}}"]
+        }
+      }
+    },
+    {
+      "name": "06 - POST Datos inválidos: campos faltantes",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 400', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test('El body incluye detalle de errores', function () {",
+              "    pm.expect(pm.response.json()).to.have.property('errores');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"testId\": 2,\n  \"tipo\": \"VERDADERO_FALSO\",\n  \"puntaje\": -1,\n  \"orden\": 0\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/preguntas",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "preguntas"]
+        }
+      }
+    },
+    {
+      "name": "07 - POST Datos inválidos: orden duplicado en el mismo test",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 409 o 400 (no 500)', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([400, 409]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"testId\": 3,\n  \"enunciado\": \"¿Cuál es tu área de interés vocacional preferida?\",\n  \"tipo\": \"RESPUESTA_ABIERTA\",\n  \"puntaje\": 1.0,\n  \"orden\": 1,\n  \"obligatoria\": false\n}"
+        },
+        "description": "El test 3 ya tiene una pregunta sembrada con orden=1 (ver 03_datos_prueba.sql), así que este POST debe chocar contra la restricción UNIQUE(test_id, orden) sin necesidad de crear nada antes.",
+        "url": {
+          "raw": "{{baseUrl}}/api/preguntas",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "preguntas"]
+        }
+      }
+    },
+    {
+      "name": "08 - GET ID inexistente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 404', function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/preguntas/9999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "preguntas", "9999"]
+        }
+      }
+    }
+  ]
+}
