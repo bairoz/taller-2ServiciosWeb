@@ -1,0 +1,128 @@
+@baseUrl = http://localhost:8080/api/psicologos
+
+### 01 - Crear psicólogo (201). Ejecutar primero; conserva el ID para los demás casos.
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nombre": "Camila",
+  "apellido": "Rojas",
+  "email": "camila.taller.psicologos@example.com",
+  "numeroRegistro": "PSI-TALLER-001",
+  "especialidad": "CLINICA",
+  "aniosExperiencia": 5,
+  "fechaTitulacion": "2020-03-21",
+  "disponible": true
+}
+
+> {%
+    client.test("Creación exitosa", function () { client.assert(response.status === 201); });
+    if (response.status === 201) client.global.set("psicologoId", response.body.id);
+%}
+
+### 02 - Listar psicólogos (200 y arreglo JSON)
+GET {{baseUrl}}
+
+> {%
+    client.test("Listado", function () {
+        client.assert(response.status === 200);
+        client.assert(Array.isArray(response.body));
+    });
+%}
+
+### 03 - Consultar el psicólogo creado (200)
+GET {{baseUrl}}/{{psicologoId}}
+
+> {%
+    client.test("Consulta por ID", function () { client.assert(response.status === 200); });
+%}
+
+### 04 - Actualizar el psicólogo (200)
+PUT {{baseUrl}}/{{psicologoId}}
+Content-Type: application/json
+
+{
+  "nombre": "Camila",
+  "apellido": "Rojas",
+  "email": "camila.taller.psicologos@example.com",
+  "numeroRegistro": "PSI-TALLER-001",
+  "especialidad": "EDUCACIONAL",
+  "aniosExperiencia": 6,
+  "fechaTitulacion": "2020-03-21",
+  "disponible": false
+}
+
+> {%
+    client.test("Actualización", function () {
+        client.assert(response.status === 200);
+        client.assert(response.body.disponible === false);
+        client.assert(response.body.especialidad === "EDUCACIONAL");
+    });
+%}
+
+### 05 - POST inválido: nombre vacío, email inválido y registro vacío (400)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "apellido": "Rojas",
+  "email": "correo-invalido",
+  "numeroRegistro": "",
+  "especialidad": "CLINICA",
+  "aniosExperiencia": 5,
+  "fechaTitulacion": "2020-03-21",
+  "disponible": true
+}
+
+> {%
+    client.test("Errores por campo en POST", function () {
+        client.assert(response.status === 400);
+        client.assert(!!response.body.errores.nombre);
+        client.assert(!!response.body.errores.email);
+        client.assert(!!response.body.errores.numeroRegistro);
+    });
+%}
+
+### 06 - PUT inválido: experiencia fuera de rango y fecha futura (400)
+PUT {{baseUrl}}/{{psicologoId}}
+Content-Type: application/json
+
+{
+  "nombre": "Camila",
+  "apellido": "Rojas",
+  "email": "camila.taller.psicologos@example.com",
+  "numeroRegistro": "PSI-TALLER-001",
+  "especialidad": "CLINICA",
+  "aniosExperiencia": 61,
+  "fechaTitulacion": "2999-01-01",
+  "disponible": true
+}
+
+> {%
+    client.test("Errores por campo en PUT", function () {
+        client.assert(response.status === 400);
+        client.assert(!!response.body.errores.aniosExperiencia);
+        client.assert(!!response.body.errores.fechaTitulacion);
+    });
+%}
+
+### 07 - Eliminar el psicólogo creado (200 con JSON)
+DELETE {{baseUrl}}/{{psicologoId}}
+
+> {%
+    client.test("Eliminación", function () {
+        client.assert(response.status === 200);
+        client.assert(!!response.body.mensaje);
+    });
+%}
+
+### 08 - Consultar el ID recién eliminado garantiza que no existe (404)
+GET {{baseUrl}}/{{psicologoId}}
+
+> {%
+    client.test("Recurso inexistente", function () {
+        client.assert(response.status === 404);
+        client.assert(!!response.body.message);
+    });
+%}
