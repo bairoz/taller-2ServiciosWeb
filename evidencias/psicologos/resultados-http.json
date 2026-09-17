@@ -1,0 +1,196 @@
+[
+  {
+    "caso": "01 - Crear psicólogo (201). Ejecutar primero; conserva el ID para los demás casos.",
+    "fecha": "2026-09-16T20:50:31.0218813-06:00",
+    "metodo": "POST",
+    "url": "http://localhost:8080/api/psicologos",
+    "enviado": {
+      "nombre": "Camila",
+      "apellido": "Rojas",
+      "email": "camila.taller.psicologos@example.com",
+      "numeroRegistro": "PSI-TALLER-001",
+      "especialidad": "CLINICA",
+      "aniosExperiencia": 5,
+      "fechaTitulacion": "2020-03-21",
+      "disponible": true
+    },
+    "esperado": 201,
+    "status": 201,
+    "respuesta": {
+      "id": 1,
+      "nombre": "Camila",
+      "apellido": "Rojas",
+      "email": "camila.taller.psicologos@example.com",
+      "numeroRegistro": "PSI-TALLER-001",
+      "especialidad": "CLINICA",
+      "aniosExperiencia": 5,
+      "fechaTitulacion": "2020-03-21",
+      "disponible": true,
+      "creadoAt": "2026-09-16T20:50:30.815111-06:00",
+      "actualizadoAt": "2026-09-16T20:50:30.815111-06:00"
+    }
+  },
+  {
+    "caso": "02 - Listar psicólogos (200 y arreglo JSON)",
+    "fecha": "2026-09-16T20:50:31.1335599-06:00",
+    "metodo": "GET",
+    "url": "http://localhost:8080/api/psicologos",
+    "enviado": null,
+    "esperado": 200,
+    "status": 200,
+    "respuesta": {
+      "id": 1,
+      "nombre": "Camila",
+      "apellido": "Rojas",
+      "email": "camila.taller.psicologos@example.com",
+      "numeroRegistro": "PSI-TALLER-001",
+      "especialidad": "CLINICA",
+      "aniosExperiencia": 5,
+      "fechaTitulacion": "2020-03-21",
+      "disponible": true,
+      "creadoAt": "2026-09-17T02:50:30.815111Z",
+      "actualizadoAt": "2026-09-17T02:50:30.815111Z"
+    }
+  },
+  {
+    "caso": "03 - Consultar el psicólogo creado (200)",
+    "fecha": "2026-09-16T20:50:31.1592557-06:00",
+    "metodo": "GET",
+    "url": "http://localhost:8080/api/psicologos/1",
+    "enviado": null,
+    "esperado": 200,
+    "status": 200,
+    "respuesta": {
+      "id": 1,
+      "nombre": "Camila",
+      "apellido": "Rojas",
+      "email": "camila.taller.psicologos@example.com",
+      "numeroRegistro": "PSI-TALLER-001",
+      "especialidad": "CLINICA",
+      "aniosExperiencia": 5,
+      "fechaTitulacion": "2020-03-21",
+      "disponible": true,
+      "creadoAt": "2026-09-17T02:50:30.815111Z",
+      "actualizadoAt": "2026-09-17T02:50:30.815111Z"
+    }
+  },
+  {
+    "caso": "04 - Actualizar el psicólogo (200)",
+    "fecha": "2026-09-16T20:50:31.2119048-06:00",
+    "metodo": "PUT",
+    "url": "http://localhost:8080/api/psicologos/1",
+    "enviado": {
+      "nombre": "Camila",
+      "apellido": "Rojas",
+      "email": "camila.taller.psicologos@example.com",
+      "numeroRegistro": "PSI-TALLER-001",
+      "especialidad": "EDUCACIONAL",
+      "aniosExperiencia": 6,
+      "fechaTitulacion": "2020-03-21",
+      "disponible": false
+    },
+    "esperado": 200,
+    "status": 200,
+    "respuesta": {
+      "id": 1,
+      "nombre": "Camila",
+      "apellido": "Rojas",
+      "email": "camila.taller.psicologos@example.com",
+      "numeroRegistro": "PSI-TALLER-001",
+      "especialidad": "EDUCACIONAL",
+      "aniosExperiencia": 6,
+      "fechaTitulacion": "2020-03-21",
+      "disponible": false,
+      "creadoAt": "2026-09-17T02:50:30.815111Z",
+      "actualizadoAt": "2026-09-16T20:50:31.194811-06:00"
+    }
+  },
+  {
+    "caso": "05 - POST inválido: nombre vacío, email inválido y registro vacío (400)",
+    "fecha": "2026-09-16T20:50:31.2492142-06:00",
+    "metodo": "POST",
+    "url": "http://localhost:8080/api/psicologos",
+    "enviado": {
+      "nombre": "",
+      "apellido": "Rojas",
+      "email": "correo-invalido",
+      "numeroRegistro": "",
+      "especialidad": "CLINICA",
+      "aniosExperiencia": 5,
+      "fechaTitulacion": "2020-03-21",
+      "disponible": true
+    },
+    "esperado": 400,
+    "status": 400,
+    "respuesta": {
+      "timestamp": "2026-09-16T20:50:31",
+      "status": 400,
+      "error": "Bad Request",
+      "message": "Error de validación",
+      "path": "/api/psicologos",
+      "errores": {
+        "nombre": "El nombre debe tener entre 2 y 100 caracteres",
+        "numeroRegistro": "El número de registro es obligatorio",
+        "email": "El email debe tener un formato válido"
+      }
+    }
+  },
+  {
+    "caso": "06 - PUT inválido: experiencia fuera de rango y fecha futura (400)",
+    "fecha": "2026-09-16T20:50:31.2635645-06:00",
+    "metodo": "PUT",
+    "url": "http://localhost:8080/api/psicologos/1",
+    "enviado": {
+      "nombre": "Camila",
+      "apellido": "Rojas",
+      "email": "camila.taller.psicologos@example.com",
+      "numeroRegistro": "PSI-TALLER-001",
+      "especialidad": "CLINICA",
+      "aniosExperiencia": 61,
+      "fechaTitulacion": "2999-01-01",
+      "disponible": true
+    },
+    "esperado": 400,
+    "status": 400,
+    "respuesta": {
+      "timestamp": "2026-09-16T20:50:31",
+      "status": 400,
+      "error": "Bad Request",
+      "message": "Error de validación",
+      "path": "/api/psicologos/1",
+      "errores": {
+        "aniosExperiencia": "Los años de experiencia no pueden superar 60",
+        "fechaTitulacion": "La fecha de titulación no puede ser futura"
+      }
+    }
+  },
+  {
+    "caso": "07 - Eliminar el psicólogo creado (200 con JSON)",
+    "fecha": "2026-09-16T20:50:31.2916338-06:00",
+    "metodo": "DELETE",
+    "url": "http://localhost:8080/api/psicologos/1",
+    "enviado": null,
+    "esperado": 200,
+    "status": 200,
+    "respuesta": {
+      "mensaje": "Psicologo eliminado correctamente",
+      "id": 1
+    }
+  },
+  {
+    "caso": "08 - Consultar el ID recién eliminado garantiza que no existe (404)",
+    "fecha": "2026-09-16T20:50:31.3049351-06:00",
+    "metodo": "GET",
+    "url": "http://localhost:8080/api/psicologos/1",
+    "enviado": null,
+    "esperado": 404,
+    "status": 404,
+    "respuesta": {
+      "timestamp": "2026-09-16T20:50:31",
+      "status": 404,
+      "error": "Not Found",
+      "message": "Psicologo con id 1 no encontrado",
+      "path": "/api/psicologos/1"
+    }
+  }
+]

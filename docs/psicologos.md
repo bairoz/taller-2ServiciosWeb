@@ -12,6 +12,17 @@ Requisitos del proyecto: Java 21 o posterior, Maven Wrapper incluido y PostgreSQ
 4. En Windows ejecutar `.\mvnw.cmd spring-boot:run` desde la raíz. La API utiliza el puerto 8080.
 5. Ejecutar `.\mvnw.cmd test` para las pruebas automatizadas, que no necesitan PostgreSQL.
 
+### Arranque alternativo en Windows
+
+Si Tomcat falla con `Unable to establish loopback connection` y `UnixDomainSockets.connect`, se verificó este arranque en el equipo local con Java 25 y PostgreSQL 16.4:
+
+```powershell
+New-Item -ItemType Directory -Force target/sockets | Out-Null
+.\mvnw.cmd spring-boot:run '-Dspring-boot.run.jvmArguments=-Djdk.net.unixdomain.tmpdir=target/sockets'
+```
+
+La opción cambia la carpeta temporal de los sockets de Java para esa ejecución. No modifica las credenciales ni la configuración compartida. Referencia: [propiedades de red de Java](https://docs.oracle.com/en/java/javase/17/core/java-networking.html).
+
 ## Endpoints
 
 | Método | Ruta | Éxito | Errores previstos |
@@ -57,6 +68,8 @@ Abrir `docs/psicologos.http` en el cliente HTTP de IntelliJ y ejecutar las petic
 | 08 Consultar eliminado | 404 | 08-get-inexistente.png |
 
 Cada captura debe mostrar método, URL, cuerpo enviado cuando corresponda, estado HTTP y respuesta JSON. Las capturas deben obtenerse de ejecuciones reales; el archivo HTTP por sí solo no es evidencia de ejecución.
+
+Se ejecutaron las ocho peticiones contra la API real y PostgreSQL mediante PowerShell. El registro de método, URL, cuerpo, estado y respuesta está en `evidencias/psicologos/resultados-http.json`; los ocho estados coincidieron con los esperados. Este registro complementa las pruebas, pero aún deben obtenerse las capturas solicitadas desde Postman, Insomnia o IntelliJ.
 
 Si se interrumpe la secuencia después de crear el registro, retomar con su ID o cambiar el email y número de registro antes de crear otro. Una ejecución completa elimina el registro y permite repetir la secuencia.
 
