@@ -56,7 +56,7 @@ El manejador global existente devuelve `timestamp`, `status`, `error`, `message`
 
 Abrir `docs/psicologos.http` en el cliente HTTP de IntelliJ y ejecutar las peticiones en orden. El POST guarda automáticamente `psicologoId`. En otro cliente se debe copiar el ID de la respuesta del POST. Los casos solo actualizan y eliminan el registro creado para esta secuencia.
 
-| Caso | Resultado esperado | Captura que se debe guardar en evidencias/psicologos/ |
+| Caso | Resultado esperado | Captura incluida en evidencias/psicologos/ |
 |---|---|---|
 | 01 Crear | 201 | 01-post-crear.png |
 | 02 Listar | 200 | 02-get-listar.png |
@@ -69,7 +69,7 @@ Abrir `docs/psicologos.http` en el cliente HTTP de IntelliJ y ejecutar las petic
 
 Cada captura debe mostrar método, URL, cuerpo enviado cuando corresponda, estado HTTP y respuesta JSON. Las capturas deben obtenerse de ejecuciones reales; el archivo HTTP por sí solo no es evidencia de ejecución.
 
-Se ejecutaron las ocho peticiones contra la API real y PostgreSQL mediante PowerShell. El registro de método, URL, cuerpo, estado y respuesta está en `evidencias/psicologos/resultados-http.json`; los ocho estados coincidieron con los esperados. Este registro complementa las pruebas, pero aún deben obtenerse las capturas solicitadas desde Postman, Insomnia o IntelliJ.
+Se ejecutaron las ocho peticiones contra la API real y PostgreSQL mediante PowerShell. El registro de método, URL, cuerpo, estado y respuesta está en `evidencias/psicologos/resultados-http.json`; los ocho estados coincidieron con los esperados. Las ocho capturas de Postman también están incluidas en esa carpeta. Corresponden a una ejecución posterior con el ID 2; en la actualización se usaron 0 años de experiencia (valor permitido), especialidad EDUCACIONAL y disponible false.
 
 Si se interrumpe la secuencia después de crear el registro, retomar con su ID o cambiar el email y número de registro antes de crear otro. Una ejecución completa elimina el registro y permite repetir la secuencia.
 
@@ -85,4 +85,4 @@ El enum JPA utiliza `especialidad_psicologo` de PostgreSQL. El ID se genera en l
 
 ## Integración de la entrega
 
-Por las reglas del repositorio, esta rama documenta el módulo aquí sin editar el README compartido. Al integrar en main, el equipo debe añadir al README un enlace a este documento y la tabla de endpoints para cumplir el formato de entrega del profesor. También deben incluirse las ocho capturas reales antes de considerar completa la entrega.
+Por las reglas del repositorio, esta rama documenta el módulo aquí sin editar el README compartido. Al integrar en main, el equipo debe añadir al README un enlace a este documento y la tabla de endpoints para cumplir el formato de entrega del profesor. Las ocho capturas reales ya están incluidas en evidencias/psicologos/.
