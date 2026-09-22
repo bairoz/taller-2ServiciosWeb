@@ -1,0 +1,358 @@
+[
+  {
+    "archivo": "01-post-crear",
+    "caso": "Crear administrador",
+    "fecha": "2026-09-22T07:09:07.000Z",
+    "metodo": "POST",
+    "url": "http://127.0.0.1:18080/api/admins",
+    "enviado": {
+      "nombre": "Ana",
+      "apellido": "Perez",
+      "usuario": "admin.evidencia",
+      "email": "admin.evidencia@example.com",
+      "password": "DemoClave123",
+      "rol": "ADMIN",
+      "activo": true,
+      "intentosFallidos": 0,
+      "ultimoAcceso": null
+    },
+    "solicitud": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Perez\",\n  \"usuario\": \"admin.evidencia\",\n  \"email\": \"admin.evidencia@example.com\",\n  \"password\": \"DemoClave123\",\n  \"rol\": \"ADMIN\",\n  \"activo\": true,\n  \"intentosFallidos\": 0,\n  \"ultimoAcceso\": null\n}",
+    "esperado": 201,
+    "status": 201,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "date": "Tue, 22 Sep 2026 07:09:08 GMT",
+      "keep-alive": "timeout=60",
+      "location": "http://127.0.0.1:18080/api/admins/1",
+      "transfer-encoding": "chunked"
+    },
+    "respuesta": {
+      "id": 1,
+      "nombre": "Ana",
+      "apellido": "Perez",
+      "usuario": "admin.evidencia",
+      "email": "admin.evidencia@example.com",
+      "rol": "ADMIN",
+      "activo": true,
+      "intentosFallidos": 0,
+      "ultimoAcceso": null,
+      "creadoAt": "2026-09-22T01:09:08.819675-06:00",
+      "actualizadoAt": "2026-09-22T01:09:08.819675-06:00"
+    },
+    "respuestaTexto": "{\"id\":1,\"nombre\":\"Ana\",\"apellido\":\"Perez\",\"usuario\":\"admin.evidencia\",\"email\":\"admin.evidencia@example.com\",\"rol\":\"ADMIN\",\"activo\":true,\"intentosFallidos\":0,\"ultimoAcceso\":null,\"creadoAt\":\"2026-09-22T01:09:08.819675-06:00\",\"actualizadoAt\":\"2026-09-22T01:09:08.819675-06:00\"}"
+  },
+  {
+    "archivo": "02-get-listar",
+    "caso": "Listar administradores",
+    "fecha": "2026-09-22T07:09:08.983Z",
+    "metodo": "GET",
+    "url": "http://127.0.0.1:18080/api/admins",
+    "enviado": null,
+    "solicitud": null,
+    "esperado": 200,
+    "status": 200,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "date": "Tue, 22 Sep 2026 07:09:09 GMT",
+      "keep-alive": "timeout=60",
+      "transfer-encoding": "chunked"
+    },
+    "respuesta": [
+      {
+        "id": 1,
+        "nombre": "Ana",
+        "apellido": "Perez",
+        "usuario": "admin.evidencia",
+        "email": "admin.evidencia@example.com",
+        "rol": "ADMIN",
+        "activo": true,
+        "intentosFallidos": 0,
+        "ultimoAcceso": null,
+        "creadoAt": "2026-09-22T07:09:08.819675Z",
+        "actualizadoAt": "2026-09-22T07:09:08.819675Z"
+      }
+    ],
+    "respuestaTexto": "[{\"id\":1,\"nombre\":\"Ana\",\"apellido\":\"Perez\",\"usuario\":\"admin.evidencia\",\"email\":\"admin.evidencia@example.com\",\"rol\":\"ADMIN\",\"activo\":true,\"intentosFallidos\":0,\"ultimoAcceso\":null,\"creadoAt\":\"2026-09-22T07:09:08.819675Z\",\"actualizadoAt\":\"2026-09-22T07:09:08.819675Z\"}]"
+  },
+  {
+    "archivo": "03-get-por-id",
+    "caso": "Consultar administrador por ID",
+    "fecha": "2026-09-22T07:09:09.087Z",
+    "metodo": "GET",
+    "url": "http://127.0.0.1:18080/api/admins/1",
+    "enviado": null,
+    "solicitud": null,
+    "esperado": 200,
+    "status": 200,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "date": "Tue, 22 Sep 2026 07:09:09 GMT",
+      "keep-alive": "timeout=60",
+      "transfer-encoding": "chunked"
+    },
+    "respuesta": {
+      "id": 1,
+      "nombre": "Ana",
+      "apellido": "Perez",
+      "usuario": "admin.evidencia",
+      "email": "admin.evidencia@example.com",
+      "rol": "ADMIN",
+      "activo": true,
+      "intentosFallidos": 0,
+      "ultimoAcceso": null,
+      "creadoAt": "2026-09-22T07:09:08.819675Z",
+      "actualizadoAt": "2026-09-22T07:09:08.819675Z"
+    },
+    "respuestaTexto": "{\"id\":1,\"nombre\":\"Ana\",\"apellido\":\"Perez\",\"usuario\":\"admin.evidencia\",\"email\":\"admin.evidencia@example.com\",\"rol\":\"ADMIN\",\"activo\":true,\"intentosFallidos\":0,\"ultimoAcceso\":null,\"creadoAt\":\"2026-09-22T07:09:08.819675Z\",\"actualizadoAt\":\"2026-09-22T07:09:08.819675Z\"}"
+  },
+  {
+    "archivo": "04-put-actualizar",
+    "caso": "Actualizar rol y estado",
+    "fecha": "2026-09-22T07:09:09.116Z",
+    "metodo": "PUT",
+    "url": "http://127.0.0.1:18080/api/admins/1",
+    "enviado": {
+      "nombre": "Ana",
+      "apellido": "Perez",
+      "usuario": "admin.evidencia",
+      "email": "admin.evidencia@example.com",
+      "password": "NuevaDemo123",
+      "rol": "LECTOR",
+      "activo": false,
+      "intentosFallidos": 2,
+      "ultimoAcceso": "2025-01-15T10:30:00-06:00"
+    },
+    "solicitud": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Perez\",\n  \"usuario\": \"admin.evidencia\",\n  \"email\": \"admin.evidencia@example.com\",\n  \"password\": \"NuevaDemo123\",\n  \"rol\": \"LECTOR\",\n  \"activo\": false,\n  \"intentosFallidos\": 2,\n  \"ultimoAcceso\": \"2025-01-15T10:30:00-06:00\"\n}",
+    "esperado": 200,
+    "status": 200,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "date": "Tue, 22 Sep 2026 07:09:09 GMT",
+      "keep-alive": "timeout=60",
+      "transfer-encoding": "chunked"
+    },
+    "respuesta": {
+      "id": 1,
+      "nombre": "Ana",
+      "apellido": "Perez",
+      "usuario": "admin.evidencia",
+      "email": "admin.evidencia@example.com",
+      "rol": "LECTOR",
+      "activo": false,
+      "intentosFallidos": 2,
+      "ultimoAcceso": "2025-01-15T16:30:00Z",
+      "creadoAt": "2026-09-22T07:09:08.819675Z",
+      "actualizadoAt": "2026-09-22T01:09:09.185402-06:00"
+    },
+    "respuestaTexto": "{\"id\":1,\"nombre\":\"Ana\",\"apellido\":\"Perez\",\"usuario\":\"admin.evidencia\",\"email\":\"admin.evidencia@example.com\",\"rol\":\"LECTOR\",\"activo\":false,\"intentosFallidos\":2,\"ultimoAcceso\":\"2025-01-15T16:30:00Z\",\"creadoAt\":\"2026-09-22T07:09:08.819675Z\",\"actualizadoAt\":\"2026-09-22T01:09:09.185402-06:00\"}"
+  },
+  {
+    "archivo": "05-post-invalido",
+    "caso": "Rechazar datos inválidos",
+    "fecha": "2026-09-22T07:09:09.226Z",
+    "metodo": "POST",
+    "url": "http://127.0.0.1:18080/api/admins",
+    "enviado": {
+      "nombre": "",
+      "apellido": "Perez",
+      "usuario": "admin.evidencia",
+      "email": "correo-invalido",
+      "password": "corta",
+      "rol": "ADMIN",
+      "activo": true,
+      "intentosFallidos": -1,
+      "ultimoAcceso": null
+    },
+    "solicitud": "{\n  \"nombre\": \"\",\n  \"apellido\": \"Perez\",\n  \"usuario\": \"admin.evidencia\",\n  \"email\": \"correo-invalido\",\n  \"password\": \"corta\",\n  \"rol\": \"ADMIN\",\n  \"activo\": true,\n  \"intentosFallidos\": -1,\n  \"ultimoAcceso\": null\n}",
+    "esperado": 400,
+    "status": 400,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "close",
+      "content-type": "application/json",
+      "date": "Tue, 22 Sep 2026 07:09:09 GMT",
+      "transfer-encoding": "chunked"
+    },
+    "respuesta": {
+      "timestamp": "2026-09-22T01:09:09.255983",
+      "status": 400,
+      "error": "Bad Request",
+      "message": "Error de validación",
+      "path": "/api/admins",
+      "errores": {
+        "intentosFallidos": "Los intentos fallidos no pueden ser negativos",
+        "nombre": "El nombre es obligatorio",
+        "password": "La contraseña debe tener entre 8 y 100 caracteres",
+        "email": "El email debe tener un formato válido"
+      }
+    },
+    "respuestaTexto": "{\"timestamp\":\"2026-09-22T01:09:09.255983\",\"status\":400,\"error\":\"Bad Request\",\"message\":\"Error de validación\",\"path\":\"/api/admins\",\"errores\":{\"intentosFallidos\":\"Los intentos fallidos no pueden ser negativos\",\"nombre\":\"El nombre es obligatorio\",\"password\":\"La contraseña debe tener entre 8 y 100 caracteres\",\"email\":\"El email debe tener un formato válido\"}}"
+  },
+  {
+    "archivo": "06-put-invalido",
+    "caso": "Rechazar actualización con fecha futura",
+    "fecha": "2026-09-22T07:09:09.276Z",
+    "metodo": "PUT",
+    "url": "http://127.0.0.1:18080/api/admins/1",
+    "enviado": {
+      "nombre": "Ana",
+      "apellido": "Perez",
+      "usuario": "admin.evidencia",
+      "email": "admin.evidencia@example.com",
+      "password": "NuevaDemo123",
+      "rol": "LECTOR",
+      "activo": false,
+      "intentosFallidos": 2,
+      "ultimoAcceso": "2999-01-01T00:00:00Z"
+    },
+    "solicitud": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Perez\",\n  \"usuario\": \"admin.evidencia\",\n  \"email\": \"admin.evidencia@example.com\",\n  \"password\": \"NuevaDemo123\",\n  \"rol\": \"LECTOR\",\n  \"activo\": false,\n  \"intentosFallidos\": 2,\n  \"ultimoAcceso\": \"2999-01-01T00:00:00Z\"\n}",
+    "esperado": 400,
+    "status": 400,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "close",
+      "content-type": "application/json",
+      "date": "Tue, 22 Sep 2026 07:09:09 GMT",
+      "transfer-encoding": "chunked"
+    },
+    "respuesta": {
+      "timestamp": "2026-09-22T01:09:09.2852435",
+      "status": 400,
+      "error": "Bad Request",
+      "message": "Error de validación",
+      "path": "/api/admins/1",
+      "errores": {
+        "ultimoAcceso": "El último acceso no puede ser una fecha futura"
+      }
+    },
+    "respuestaTexto": "{\"timestamp\":\"2026-09-22T01:09:09.2852435\",\"status\":400,\"error\":\"Bad Request\",\"message\":\"Error de validación\",\"path\":\"/api/admins/1\",\"errores\":{\"ultimoAcceso\":\"El último acceso no puede ser una fecha futura\"}}"
+  },
+  {
+    "archivo": "07-post-usuario-duplicado",
+    "caso": "Rechazar usuario duplicado",
+    "fecha": "2026-09-22T07:09:09.289Z",
+    "metodo": "POST",
+    "url": "http://127.0.0.1:18080/api/admins",
+    "enviado": {
+      "nombre": "Ana",
+      "apellido": "Perez",
+      "usuario": "ADMIN.EVIDENCIA",
+      "email": "otro.admin@example.com",
+      "password": "DemoClave123",
+      "rol": "ADMIN",
+      "activo": true,
+      "intentosFallidos": 0,
+      "ultimoAcceso": null
+    },
+    "solicitud": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Perez\",\n  \"usuario\": \"ADMIN.EVIDENCIA\",\n  \"email\": \"otro.admin@example.com\",\n  \"password\": \"DemoClave123\",\n  \"rol\": \"ADMIN\",\n  \"activo\": true,\n  \"intentosFallidos\": 0,\n  \"ultimoAcceso\": null\n}",
+    "esperado": 409,
+    "status": 409,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "date": "Tue, 22 Sep 2026 07:09:09 GMT",
+      "keep-alive": "timeout=60",
+      "transfer-encoding": "chunked"
+    },
+    "respuesta": {
+      "timestamp": "2026-09-22T01:09:09.3061012",
+      "status": 409,
+      "error": "Conflict",
+      "message": "Ya existe un admin con el usuario admin.evidencia",
+      "path": "/api/admins"
+    },
+    "respuestaTexto": "{\"timestamp\":\"2026-09-22T01:09:09.3061012\",\"status\":409,\"error\":\"Conflict\",\"message\":\"Ya existe un admin con el usuario admin.evidencia\",\"path\":\"/api/admins\"}"
+  },
+  {
+    "archivo": "08-post-email-duplicado",
+    "caso": "Rechazar email duplicado",
+    "fecha": "2026-09-22T07:09:09.309Z",
+    "metodo": "POST",
+    "url": "http://127.0.0.1:18080/api/admins",
+    "enviado": {
+      "nombre": "Ana",
+      "apellido": "Perez",
+      "usuario": "otro.admin",
+      "email": "ADMIN.EVIDENCIA@example.com",
+      "password": "DemoClave123",
+      "rol": "ADMIN",
+      "activo": true,
+      "intentosFallidos": 0,
+      "ultimoAcceso": null
+    },
+    "solicitud": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Perez\",\n  \"usuario\": \"otro.admin\",\n  \"email\": \"ADMIN.EVIDENCIA@example.com\",\n  \"password\": \"DemoClave123\",\n  \"rol\": \"ADMIN\",\n  \"activo\": true,\n  \"intentosFallidos\": 0,\n  \"ultimoAcceso\": null\n}",
+    "esperado": 409,
+    "status": 409,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "date": "Tue, 22 Sep 2026 07:09:09 GMT",
+      "keep-alive": "timeout=60",
+      "transfer-encoding": "chunked"
+    },
+    "respuesta": {
+      "timestamp": "2026-09-22T01:09:09.3249801",
+      "status": 409,
+      "error": "Conflict",
+      "message": "Ya existe un admin con el email admin.evidencia@example.com",
+      "path": "/api/admins"
+    },
+    "respuestaTexto": "{\"timestamp\":\"2026-09-22T01:09:09.3249801\",\"status\":409,\"error\":\"Conflict\",\"message\":\"Ya existe un admin con el email admin.evidencia@example.com\",\"path\":\"/api/admins\"}"
+  },
+  {
+    "archivo": "09-delete-eliminar",
+    "caso": "Eliminar administrador de prueba",
+    "fecha": "2026-09-22T07:09:09.328Z",
+    "metodo": "DELETE",
+    "url": "http://127.0.0.1:18080/api/admins/1",
+    "enviado": null,
+    "solicitud": null,
+    "esperado": 204,
+    "status": 204,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "keep-alive",
+      "date": "Tue, 22 Sep 2026 07:09:09 GMT",
+      "keep-alive": "timeout=60"
+    },
+    "respuesta": null,
+    "respuestaTexto": ""
+  },
+  {
+    "archivo": "10-get-inexistente",
+    "caso": "Consultar el administrador eliminado",
+    "fecha": "2026-09-22T07:09:09.353Z",
+    "metodo": "GET",
+    "url": "http://127.0.0.1:18080/api/admins/1",
+    "enviado": null,
+    "solicitud": null,
+    "esperado": 404,
+    "status": 404,
+    "estadoHttp": "",
+    "cabeceras": {
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "date": "Tue, 22 Sep 2026 07:09:09 GMT",
+      "keep-alive": "timeout=60",
+      "transfer-encoding": "chunked"
+    },
+    "respuesta": {
+      "timestamp": "2026-09-22T01:09:09.3626927",
+      "status": 404,
+      "error": "Not Found",
+      "message": "Admin con id 1 no encontrado",
+      "path": "/api/admins/1"
+    },
+    "respuestaTexto": "{\"timestamp\":\"2026-09-22T01:09:09.3626927\",\"status\":404,\"error\":\"Not Found\",\"message\":\"Admin con id 1 no encontrado\",\"path\":\"/api/admins/1\"}"
+  }
+]
