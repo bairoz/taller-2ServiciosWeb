@@ -1,0 +1,304 @@
+{
+  "info": {
+    "_postman_id": "b6e3a2d4-8f1c-4e2a-9c3e-1a2b3c4d5e6f",
+    "name": "Test - TestController (psicometria-api)",
+    "description": "Colección de pruebas para la entidad Test (TestController, ruta base /api/tests). Incluye 5 pruebas exitosas (una por endpoint), 2 con datos inválidos y 1 con un identificador inexistente, según lo pedido en la Parte 5 del taller.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "testId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "01 - Casos exitosos",
+      "item": [
+        {
+          "name": "1. POST Crear Test (éxito)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const jsonData = pm.response.json();",
+                  "pm.test('La respuesta incluye el id generado', function () {",
+                  "    pm.expect(jsonData.id).to.be.a('number');",
+                  "});",
+                  "",
+                  "if (jsonData && jsonData.id) {",
+                  "    pm.collectionVariables.set('testId', jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"psicologoId\": 1,\n  \"titulo\": \"Test de Ansiedad {{$timestamp}}\",\n  \"descripcion\": \"Evaluación breve para medir niveles de ansiedad en adultos.\",\n  \"categoria\": \"EMOCIONAL\",\n  \"duracionMinutos\": 30,\n  \"puntajeAprobacion\": 60.00,\n  \"visibilidad\": \"PRIVADO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tests"]
+            },
+            "description": "Crea un Test con datos válidos. Debe responder 201 Created con el TestDTO creado (incluyendo su id) y el header Location apuntando a /api/tests/{id}."
+          },
+          "response": []
+        },
+        {
+          "name": "2. GET Listar Tests (éxito)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('La respuesta es un arreglo JSON', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tests"]
+            },
+            "description": "Lista todos los Tests existentes. Debe responder 200 OK con un arreglo JSON de TestDTO."
+          },
+          "response": []
+        },
+        {
+          "name": "3. GET Buscar Test por ID (éxito)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('El id de la respuesta coincide con el solicitado', function () {",
+                  "    pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get('testId')));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tests/{{testId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tests", "{{testId}}"]
+            },
+            "description": "Busca por id el Test creado en la petición 1. Debe responder 200 OK con el TestDTO correspondiente."
+          },
+          "response": []
+        },
+        {
+          "name": "4. PUT Actualizar Test (éxito)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('El título fue actualizado', function () {",
+                  "    pm.expect(pm.response.json().titulo).to.include('Actualizado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"psicologoId\": 1,\n  \"titulo\": \"Test de Ansiedad - Actualizado {{$timestamp}}\",\n  \"descripcion\": \"Descripción actualizada del test de ansiedad.\",\n  \"categoria\": \"EMOCIONAL\",\n  \"duracionMinutos\": 45,\n  \"puntajeAprobacion\": 70.00,\n  \"visibilidad\": \"PUBLICO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tests/{{testId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tests", "{{testId}}"]
+            },
+            "description": "Actualiza con datos válidos el Test creado en la petición 1. Debe responder 200 OK con el TestDTO actualizado."
+          },
+          "response": []
+        },
+        {
+          "name": "5. DELETE Eliminar Test (éxito)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('El mensaje confirma la eliminación', function () {",
+                  "    pm.expect(pm.response.json().mensaje).to.include('eliminado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tests/{{testId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tests", "{{testId}}"]
+            },
+            "description": "Elimina el Test creado en la petición 1. Debe responder 200 OK con un RespuestaSimple (estado, mensaje, id)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Casos de error",
+      "item": [
+        {
+          "name": "6. POST Crear Test - datos inválidos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('La respuesta incluye el mapa de errores de validación', function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.errores).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Ab\",\n  \"descripcion\": \"Título demasiado corto y sin categoría ni puntaje.\",\n  \"visibilidad\": \"PUBLICO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tests",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tests"]
+            },
+            "description": "Intenta crear un Test con datos inválidos: 'titulo' tiene menos de 5 caracteres, y faltan 'categoria' y 'puntajeAprobacion' (obligatorios). Debe responder 400 Bad Request con el detalle de los errores de validación."
+          },
+          "response": []
+        },
+        {
+          "name": "7. PUT Actualizar Test - datos inválidos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('La respuesta incluye el mapa de errores de validación', function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.errores).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Test con datos inválidos\",\n  \"categoria\": \"APTITUD\",\n  \"duracionMinutos\": -10,\n  \"puntajeAprobacion\": 150.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tests/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tests", "1"]
+            },
+            "description": "Intenta actualizar un Test con datos inválidos: 'duracionMinutos' es negativo, 'puntajeAprobacion' supera 100 y falta 'visibilidad' (obligatoria). Debe responder 400 Bad Request; la validación del cuerpo ocurre antes de buscar el id, por lo que el resultado es el mismo exista o no ese id."
+          },
+          "response": []
+        },
+        {
+          "name": "8. GET Buscar Test - ID inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('La respuesta indica el recurso no encontrado', function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.status).to.eql(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tests/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tests", "999999"]
+            },
+            "description": "Busca un Test con un id que no existe en la base de datos (999999). Debe responder 404 Not Found con el detalle del error."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
