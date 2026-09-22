@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="arquitectura" name="Arquitectura propuesta">
+    <mxGraphModel dx="1602" dy="611" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titulo" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#dbeafe;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="ARQUITECTURA PROPUESTA — SISTEMA DE TESTS PSICOMÉTRICOS" vertex="1">
+          <mxGeometry height="50" width="1300" x="50" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="api" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#f1f5f9;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="" vertex="1">
+          <mxGeometry height="630" width="820" x="270" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="apilabel" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#dbeafe;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="API REST · Spring Boot · una aplicación organizada en capas" vertex="1">
+          <mxGeometry height="40" width="780" x="290" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="cliente" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#e0f2fe;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="INTERFAZ WEB· Estudiantes y psicólogos Administrado Postman como cliente de pruebas" vertex="1">
+          <mxGeometry height="105" width="680" x="340" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="controller" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#dbeafe;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="PRESENTACIÓN / CONTROLLERS + DTO Rutas HTTP · @Valid · contrato JSON · ResponseEntity" vertex="1">
+          <mxGeometry height="85" width="450" x="330" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="servicio" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ede9fe;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="APLICACIÓN / SERVICES Coordinar CRUD y transacciones · convertir DTO ↔ entidad LÓGICA DE NEGOCIO integrada: duplicados y reglas" vertex="1">
+          <mxGeometry height="105" width="450" x="330" y="475" as="geometry" />
+        </mxCell>
+        <mxCell id="repo" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fef3c7;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="ACCESO A DATOS / REPOSITORIES JpaRepository · buscar, guardar y eliminar MODELS: entidades JPA y enumeraciones" vertex="1">
+          <mxGeometry height="85" width="450" x="330" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="infra" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffedd5;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="INFRAESTRUCTURA DE PERSISTENCIA Hibernate/JPA · driver JDBC PostgreSQL · pool HikariCP" vertex="1">
+          <mxGeometry height="75" width="450" x="330" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="transversal" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fce7f3;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="SOPORTE TRANSVERSAL  Tomcat: servidor HTTP  Configuración de conexión y credenciales locales  @RestControllerAdvice: excepciones → error JSON 400 / 404 / 409" vertex="1">
+          <mxGeometry height="410" width="235" x="830" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#dcfce7;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="BASE DE DATOS · PostgreSQL Evaluados · psicólogos · tests · preguntas · admins Claves, relaciones, restricciones y almacenamiento" vertex="1">
+          <mxGeometry height="100" width="680" x="340" y="950" as="geometry" />
+        </mxCell>
+        <mxCell id="nota" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="FLUJO INTERNO Llamadas Java DTOs y entidades  No es HTTP entre capas" vertex="1">
+          <mxGeometry height="150" width="195" x="40" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#64748b;fontSize=16;fontFamily=Helvetica;" value="AZUL: solicitud ↓ VERDE: respuesta ↑  HTTP local :8080 HTTPS propuesto para despliegue" vertex="1">
+          <mxGeometry height="175" width="225" x="1120" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="cliente" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#2563eb;exitX=0.2;exitY=1;entryX=0.2;entryY=0;" target="controller" value="HTTP/HTTPS · JSON">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="controller" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#15803d;dashed=1;exitX=0.8;exitY=0;entryX=0.8;entryY=1;" target="cliente" value="Estado HTTP + JSON">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="controller" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#2563eb;exitX=0.2;exitY=1;entryX=0.2;entryY=0;" target="servicio" value="DTO validado">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="servicio" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#15803d;dashed=1;exitX=0.8;exitY=0;entryX=0.8;entryY=1;" target="controller" value="DTO de respuesta">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="servicio" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#2563eb;exitX=0.2;exitY=1;entryX=0.2;entryY=0;" target="repo" value="Operación de datos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="repo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#15803d;dashed=1;exitX=0.8;exitY=0;entryX=0.8;entryY=1;" target="servicio" value="Entidad / resultado">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="repo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#2563eb;exitX=0.2;exitY=1;entryX=0.2;entryY=0;" target="infra" value="Persistencia JPA">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="infra" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#15803d;dashed=1;exitX=0.8;exitY=0;entryX=0.8;entryY=1;" target="repo" value="Objetos mapeados">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="infra" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#2563eb;exitX=0.2;exitY=1;entryX=0.2;entryY=0;" target="db" value="SQL vía JDBC / TCP :5432">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#15803d;dashed=1;exitX=0.8;exitY=0;entryX=0.8;entryY=1;" target="infra" value="Filas / resultado SQL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
