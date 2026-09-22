@@ -1,0 +1,150 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><title>Evidencias de admins — ElAiwan</title><style>*{box-sizing:border-box}body{margin:0;background:#e9eef5;color:#182538;font-family:Arial,sans-serif}article{width:1440px;background:#fff;padding:40px;margin:30px auto;border-top:8px solid #176a5e}header{border-bottom:1px solid #d8e0e8;padding-bottom:24px}.eyebrow{font-size:16px;font-weight:bold;color:#176a5e;letter-spacing:1px}h1{font-size:32px;margin:14px 0 12px}.meta{font-size:16px;color:#536176;line-height:1.7}.route{background:#f0f4f8;padding:18px 20px;border-radius:8px;font-family:Consolas,monospace;font-size:20px;margin:22px 0;display:flex;justify-content:space-between;align-items:center;gap:20px}.status{background:#dcf5e9;color:#126443;padding:9px 15px;border-radius:6px;font-weight:bold;white-space:nowrap;font-family:Arial}.cols{display:grid;grid-template-columns:1fr 1.2fr;gap:24px}h2{font-size:19px;margin:0 0 12px}pre{font-family:Consolas,monospace;font-size:17px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;background:#f7f9fc;border:1px solid #dce3eb;padding:20px;border-radius:8px;margin:0;min-height:200px}.detail{font-size:15px;color:#536176;margin:14px 0;overflow-wrap:anywhere}footer{margin-top:24px;border-top:1px solid #d8e0e8;padding-top:18px;font-size:15px;line-height:1.6;color:#536176}.index{width:1440px;margin:30px auto;padding:25px;background:white}.index a{color:#176a5e}.index li{margin:10px 0}@media print{article{break-after:page;margin:0}.index{display:none}}</style><body><div class="index"><h1>Admins: 10 casos HTTP verificados</h1><p>Informe de ejecución real. API de la rama feature/admins, commit c311f49.</p><ol><li><a href="#01-post-crear">Crear administrador</a> — 201</li><li><a href="#02-get-listar">Listar administradores</a> — 200</li><li><a href="#03-get-por-id">Consultar administrador por ID</a> — 200</li><li><a href="#04-put-actualizar">Actualizar rol y estado</a> — 200</li><li><a href="#05-post-invalido">Rechazar datos inválidos</a> — 400</li><li><a href="#06-put-invalido">Rechazar actualización con fecha futura</a> — 400</li><li><a href="#07-post-usuario-duplicado">Rechazar usuario duplicado</a> — 409</li><li><a href="#08-post-email-duplicado">Rechazar email duplicado</a> — 409</li><li><a href="#09-delete-eliminar">Eliminar administrador de prueba</a> — 204</li><li><a href="#10-get-inexistente">Consultar el administrador eliminado</a> — 404</li></ol></div><article id="01-post-crear"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 01 / 10</div><h1>Crear administrador</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:07.000Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>POST</b> http://127.0.0.1:18080/api/admins</span><span class="status">201 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>{
+  &quot;nombre&quot;: &quot;Ana&quot;,
+  &quot;apellido&quot;: &quot;Perez&quot;,
+  &quot;usuario&quot;: &quot;admin.evidencia&quot;,
+  &quot;email&quot;: &quot;admin.evidencia@example.com&quot;,
+  &quot;password&quot;: &quot;DemoClave123&quot;,
+  &quot;rol&quot;: &quot;ADMIN&quot;,
+  &quot;activo&quot;: true,
+  &quot;intentosFallidos&quot;: 0,
+  &quot;ultimoAcceso&quot;: null
+}</pre><div class="detail">Content-Type: application/json · Contraseña ficticia de prueba.</div></section><section><h2>Respuesta recibida</h2><pre>{
+  &quot;id&quot;: 1,
+  &quot;nombre&quot;: &quot;Ana&quot;,
+  &quot;apellido&quot;: &quot;Perez&quot;,
+  &quot;usuario&quot;: &quot;admin.evidencia&quot;,
+  &quot;email&quot;: &quot;admin.evidencia@example.com&quot;,
+  &quot;rol&quot;: &quot;ADMIN&quot;,
+  &quot;activo&quot;: true,
+  &quot;intentosFallidos&quot;: 0,
+  &quot;ultimoAcceso&quot;: null,
+  &quot;creadoAt&quot;: &quot;2026-09-22T01:09:08.819675-06:00&quot;,
+  &quot;actualizadoAt&quot;: &quot;2026-09-22T01:09:08.819675-06:00&quot;
+}</pre><div class="detail">Location: http://127.0.0.1:18080/api/admins/1<br>Estado esperado: 201 · Estado recibido: 201 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article><article id="02-get-listar"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 02 / 10</div><h1>Listar administradores</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:08.983Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>GET</b> http://127.0.0.1:18080/api/admins</span><span class="status">200 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>(Sin cuerpo de petición)</pre><div class="detail">No se envió un cuerpo JSON.</div></section><section><h2>Respuesta recibida</h2><pre>[
+  {
+    &quot;id&quot;: 1,
+    &quot;nombre&quot;: &quot;Ana&quot;,
+    &quot;apellido&quot;: &quot;Perez&quot;,
+    &quot;usuario&quot;: &quot;admin.evidencia&quot;,
+    &quot;email&quot;: &quot;admin.evidencia@example.com&quot;,
+    &quot;rol&quot;: &quot;ADMIN&quot;,
+    &quot;activo&quot;: true,
+    &quot;intentosFallidos&quot;: 0,
+    &quot;ultimoAcceso&quot;: null,
+    &quot;creadoAt&quot;: &quot;2026-09-22T07:09:08.819675Z&quot;,
+    &quot;actualizadoAt&quot;: &quot;2026-09-22T07:09:08.819675Z&quot;
+  }
+]</pre><div class="detail">Estado esperado: 200 · Estado recibido: 200 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article><article id="03-get-por-id"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 03 / 10</div><h1>Consultar administrador por ID</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:09.087Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>GET</b> http://127.0.0.1:18080/api/admins/1</span><span class="status">200 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>(Sin cuerpo de petición)</pre><div class="detail">No se envió un cuerpo JSON.</div></section><section><h2>Respuesta recibida</h2><pre>{
+  &quot;id&quot;: 1,
+  &quot;nombre&quot;: &quot;Ana&quot;,
+  &quot;apellido&quot;: &quot;Perez&quot;,
+  &quot;usuario&quot;: &quot;admin.evidencia&quot;,
+  &quot;email&quot;: &quot;admin.evidencia@example.com&quot;,
+  &quot;rol&quot;: &quot;ADMIN&quot;,
+  &quot;activo&quot;: true,
+  &quot;intentosFallidos&quot;: 0,
+  &quot;ultimoAcceso&quot;: null,
+  &quot;creadoAt&quot;: &quot;2026-09-22T07:09:08.819675Z&quot;,
+  &quot;actualizadoAt&quot;: &quot;2026-09-22T07:09:08.819675Z&quot;
+}</pre><div class="detail">Estado esperado: 200 · Estado recibido: 200 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article><article id="04-put-actualizar"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 04 / 10</div><h1>Actualizar rol y estado</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:09.116Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>PUT</b> http://127.0.0.1:18080/api/admins/1</span><span class="status">200 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>{
+  &quot;nombre&quot;: &quot;Ana&quot;,
+  &quot;apellido&quot;: &quot;Perez&quot;,
+  &quot;usuario&quot;: &quot;admin.evidencia&quot;,
+  &quot;email&quot;: &quot;admin.evidencia@example.com&quot;,
+  &quot;password&quot;: &quot;NuevaDemo123&quot;,
+  &quot;rol&quot;: &quot;LECTOR&quot;,
+  &quot;activo&quot;: false,
+  &quot;intentosFallidos&quot;: 2,
+  &quot;ultimoAcceso&quot;: &quot;2025-01-15T10:30:00-06:00&quot;
+}</pre><div class="detail">Content-Type: application/json · Contraseña ficticia de prueba.</div></section><section><h2>Respuesta recibida</h2><pre>{
+  &quot;id&quot;: 1,
+  &quot;nombre&quot;: &quot;Ana&quot;,
+  &quot;apellido&quot;: &quot;Perez&quot;,
+  &quot;usuario&quot;: &quot;admin.evidencia&quot;,
+  &quot;email&quot;: &quot;admin.evidencia@example.com&quot;,
+  &quot;rol&quot;: &quot;LECTOR&quot;,
+  &quot;activo&quot;: false,
+  &quot;intentosFallidos&quot;: 2,
+  &quot;ultimoAcceso&quot;: &quot;2025-01-15T16:30:00Z&quot;,
+  &quot;creadoAt&quot;: &quot;2026-09-22T07:09:08.819675Z&quot;,
+  &quot;actualizadoAt&quot;: &quot;2026-09-22T01:09:09.185402-06:00&quot;
+}</pre><div class="detail">Estado esperado: 200 · Estado recibido: 200 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article><article id="05-post-invalido"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 05 / 10</div><h1>Rechazar datos inválidos</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:09.226Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>POST</b> http://127.0.0.1:18080/api/admins</span><span class="status">400 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>{
+  &quot;nombre&quot;: &quot;&quot;,
+  &quot;apellido&quot;: &quot;Perez&quot;,
+  &quot;usuario&quot;: &quot;admin.evidencia&quot;,
+  &quot;email&quot;: &quot;correo-invalido&quot;,
+  &quot;password&quot;: &quot;corta&quot;,
+  &quot;rol&quot;: &quot;ADMIN&quot;,
+  &quot;activo&quot;: true,
+  &quot;intentosFallidos&quot;: -1,
+  &quot;ultimoAcceso&quot;: null
+}</pre><div class="detail">Content-Type: application/json · Contraseña ficticia de prueba.</div></section><section><h2>Respuesta recibida</h2><pre>{
+  &quot;timestamp&quot;: &quot;2026-09-22T01:09:09.255983&quot;,
+  &quot;status&quot;: 400,
+  &quot;error&quot;: &quot;Bad Request&quot;,
+  &quot;message&quot;: &quot;Error de validación&quot;,
+  &quot;path&quot;: &quot;/api/admins&quot;,
+  &quot;errores&quot;: {
+    &quot;intentosFallidos&quot;: &quot;Los intentos fallidos no pueden ser negativos&quot;,
+    &quot;nombre&quot;: &quot;El nombre es obligatorio&quot;,
+    &quot;password&quot;: &quot;La contraseña debe tener entre 8 y 100 caracteres&quot;,
+    &quot;email&quot;: &quot;El email debe tener un formato válido&quot;
+  }
+}</pre><div class="detail">Estado esperado: 400 · Estado recibido: 400 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article><article id="06-put-invalido"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 06 / 10</div><h1>Rechazar actualización con fecha futura</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:09.276Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>PUT</b> http://127.0.0.1:18080/api/admins/1</span><span class="status">400 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>{
+  &quot;nombre&quot;: &quot;Ana&quot;,
+  &quot;apellido&quot;: &quot;Perez&quot;,
+  &quot;usuario&quot;: &quot;admin.evidencia&quot;,
+  &quot;email&quot;: &quot;admin.evidencia@example.com&quot;,
+  &quot;password&quot;: &quot;NuevaDemo123&quot;,
+  &quot;rol&quot;: &quot;LECTOR&quot;,
+  &quot;activo&quot;: false,
+  &quot;intentosFallidos&quot;: 2,
+  &quot;ultimoAcceso&quot;: &quot;2999-01-01T00:00:00Z&quot;
+}</pre><div class="detail">Content-Type: application/json · Contraseña ficticia de prueba.</div></section><section><h2>Respuesta recibida</h2><pre>{
+  &quot;timestamp&quot;: &quot;2026-09-22T01:09:09.2852435&quot;,
+  &quot;status&quot;: 400,
+  &quot;error&quot;: &quot;Bad Request&quot;,
+  &quot;message&quot;: &quot;Error de validación&quot;,
+  &quot;path&quot;: &quot;/api/admins/1&quot;,
+  &quot;errores&quot;: {
+    &quot;ultimoAcceso&quot;: &quot;El último acceso no puede ser una fecha futura&quot;
+  }
+}</pre><div class="detail">Estado esperado: 400 · Estado recibido: 400 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article><article id="07-post-usuario-duplicado"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 07 / 10</div><h1>Rechazar usuario duplicado</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:09.289Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>POST</b> http://127.0.0.1:18080/api/admins</span><span class="status">409 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>{
+  &quot;nombre&quot;: &quot;Ana&quot;,
+  &quot;apellido&quot;: &quot;Perez&quot;,
+  &quot;usuario&quot;: &quot;ADMIN.EVIDENCIA&quot;,
+  &quot;email&quot;: &quot;otro.admin@example.com&quot;,
+  &quot;password&quot;: &quot;DemoClave123&quot;,
+  &quot;rol&quot;: &quot;ADMIN&quot;,
+  &quot;activo&quot;: true,
+  &quot;intentosFallidos&quot;: 0,
+  &quot;ultimoAcceso&quot;: null
+}</pre><div class="detail">Content-Type: application/json · Contraseña ficticia de prueba.</div></section><section><h2>Respuesta recibida</h2><pre>{
+  &quot;timestamp&quot;: &quot;2026-09-22T01:09:09.3061012&quot;,
+  &quot;status&quot;: 409,
+  &quot;error&quot;: &quot;Conflict&quot;,
+  &quot;message&quot;: &quot;Ya existe un admin con el usuario admin.evidencia&quot;,
+  &quot;path&quot;: &quot;/api/admins&quot;
+}</pre><div class="detail">Estado esperado: 409 · Estado recibido: 409 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article><article id="08-post-email-duplicado"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 08 / 10</div><h1>Rechazar email duplicado</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:09.309Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>POST</b> http://127.0.0.1:18080/api/admins</span><span class="status">409 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>{
+  &quot;nombre&quot;: &quot;Ana&quot;,
+  &quot;apellido&quot;: &quot;Perez&quot;,
+  &quot;usuario&quot;: &quot;otro.admin&quot;,
+  &quot;email&quot;: &quot;ADMIN.EVIDENCIA@example.com&quot;,
+  &quot;password&quot;: &quot;DemoClave123&quot;,
+  &quot;rol&quot;: &quot;ADMIN&quot;,
+  &quot;activo&quot;: true,
+  &quot;intentosFallidos&quot;: 0,
+  &quot;ultimoAcceso&quot;: null
+}</pre><div class="detail">Content-Type: application/json · Contraseña ficticia de prueba.</div></section><section><h2>Respuesta recibida</h2><pre>{
+  &quot;timestamp&quot;: &quot;2026-09-22T01:09:09.3249801&quot;,
+  &quot;status&quot;: 409,
+  &quot;error&quot;: &quot;Conflict&quot;,
+  &quot;message&quot;: &quot;Ya existe un admin con el email admin.evidencia@example.com&quot;,
+  &quot;path&quot;: &quot;/api/admins&quot;
+}</pre><div class="detail">Estado esperado: 409 · Estado recibido: 409 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article><article id="09-delete-eliminar"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 09 / 10</div><h1>Eliminar administrador de prueba</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:09.328Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>DELETE</b> http://127.0.0.1:18080/api/admins/1</span><span class="status">204 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>(Sin cuerpo de petición)</pre><div class="detail">No se envió un cuerpo JSON.</div></section><section><h2>Respuesta recibida</h2><pre>(Sin cuerpo de respuesta: HTTP 204)</pre><div class="detail">Estado esperado: 204 · Estado recibido: 204 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article><article id="10-get-inexistente"><header><div class="eyebrow">EVIDENCIA HTTP REAL · ADMINS · 10 / 10</div><h1>Consultar el administrador eliminado</h1><div class="meta">ElAiwan · rama feature/admins · código c311f49<br>Ejecutado: 2026-09-22T07:09:09.353Z · Spring Boot 4.1.1 · Java 24 · PostgreSQL 17.4 (base de prueba)</div></header><div class="route"><span><b>GET</b> http://127.0.0.1:18080/api/admins/1</span><span class="status">404 </span></div><div class="cols"><section><h2>Petición enviada</h2><pre>(Sin cuerpo de petición)</pre><div class="detail">No se envió un cuerpo JSON.</div></section><section><h2>Respuesta recibida</h2><pre>{
+  &quot;timestamp&quot;: &quot;2026-09-22T01:09:09.3626927&quot;,
+  &quot;status&quot;: 404,
+  &quot;error&quot;: &quot;Not Found&quot;,
+  &quot;message&quot;: &quot;Admin con id 1 no encontrado&quot;,
+  &quot;path&quot;: &quot;/api/admins/1&quot;
+}</pre><div class="detail">Estado esperado: 404 · Estado recibido: 404 · Verificado</div></section></div><footer>Captura del informe generado a partir de <b>resultados-http.json</b>. Petición ejecutada contra la API y una base PostgreSQL real.<br>Los cuerpos originales y las cabeceras se conservan en el JSON. No es una captura de Postman.</footer></article></body></html>

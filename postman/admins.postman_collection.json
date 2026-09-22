@@ -1,0 +1,353 @@
+{
+  "info": {
+    "name": "Psicometría API - Admins - ElAiwan",
+    "description": "CRUD y validaciones de admins (10 peticiones). Importar en Postman y ejecutar en orden con Run collection. Requiere la API y PostgreSQL configurados según el README del proyecto. baseUrl está incluido y vale http://localhost:8080; se puede cambiar en Variables. La primera petición genera un usuario/email únicos y guarda el ID devuelto; la novena elimina únicamente ese admin y la décima comprueba su ausencia. Todos los datos y contraseñas son ficticios. DELETE espera 204, según AdminController de feature/admins. No hace falta importar un environment.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "adminId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminUsuario",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminEmail",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Usar los datos creados por esta colección, aunque existan variables homónimas en un environment.",
+          "['adminId', 'adminUsuario', 'adminEmail'].forEach(function (key) { pm.variables.set(key, pm.collectionVariables.get(key) || ''); });"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01. POST - Crear admin (201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/admins",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Pérez\",\n  \"usuario\": \"{{adminUsuario}}\",\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"DemoClave123\",\n  \"rol\": \"ADMIN\",\n  \"activo\": true,\n  \"intentosFallidos\": 0,\n  \"ultimoAcceso\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const sufijo = Date.now().toString() + Math.random().toString(36).slice(2, 8);",
+              "const usuario = 'admin.demo.' + sufijo;",
+              "pm.collectionVariables.set('adminId', '');",
+              "pm.collectionVariables.set('adminUsuario', usuario);",
+              "pm.collectionVariables.set('adminEmail', usuario + '@example.com');",
+              "['adminId', 'adminUsuario', 'adminEmail'].forEach(function (key) { pm.variables.set(key, pm.collectionVariables.get(key)); });"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', function () { pm.response.to.have.status(201); });",
+              "if (pm.response.code === 201) {",
+              "  const admin = pm.response.json();",
+              "  pm.test('Devuelve un ID válido', function () { pm.expect(admin.id).to.be.a('number').and.above(0); });",
+              "  if (Number.isSafeInteger(admin.id) && admin.id > 0) pm.collectionVariables.set('adminId', String(admin.id));",
+              "  pm.test('Location apunta al admin creado', function () { pm.expect(pm.response.headers.get('Location')).to.include('/api/admins/' + admin.id); });",
+              "}",
+              "pm.test('No expone la contraseña', function () { pm.expect(pm.response.json()).not.to.have.property('password'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02. GET - Listar admins (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/admins"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "const admins = pm.response.json();",
+              "pm.test('Respuesta es un arreglo', function () { pm.expect(admins).to.be.an('array'); });",
+              "pm.test('Incluye al admin creado', function () { pm.expect(admins.some(function (a) { return a.id === Number(pm.collectionVariables.get('adminId')); })).to.eql(true); });",
+              "pm.test('No expone contraseñas', function () { admins.forEach(function (a) { pm.expect(a).not.to.have.property('password'); }); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03. GET - Consultar por ID (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/admins/{{adminId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('ID correcto', function () { pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get('adminId'))); });",
+              "pm.test('No expone la contraseña', function () { pm.expect(pm.response.json()).not.to.have.property('password'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04. PUT - Actualizar admin (200)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/admins/{{adminId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Pérez\",\n  \"usuario\": \"{{adminUsuario}}\",\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"NuevaDemo123\",\n  \"rol\": \"LECTOR\",\n  \"activo\": false,\n  \"intentosFallidos\": 2,\n  \"ultimoAcceso\": \"2025-01-15T10:30:00-06:00\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('ID correcto', function () { pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get('adminId'))); });",
+              "pm.test('No expone la contraseña', function () { pm.expect(pm.response.json()).not.to.have.property('password'); });",
+              "pm.test('Actualiza rol, estado e intentos', function () { const a = pm.response.json(); pm.expect(a.rol).to.eql('LECTOR'); pm.expect(a.activo).to.eql(false); pm.expect(a.intentosFallidos).to.eql(2); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05. POST - Datos inválidos (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/admins",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"\",\n  \"apellido\": \"Pérez\",\n  \"usuario\": \"{{adminUsuario}}\",\n  \"email\": \"correo-invalido\",\n  \"password\": \"corta\",\n  \"rol\": \"ADMIN\",\n  \"activo\": true,\n  \"intentosFallidos\": -1,\n  \"ultimoAcceso\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('Detalla los campos inválidos', function () { const errores = pm.response.json().errores; pm.expect(errores).to.be.an('object'); ['nombre', 'email', 'password', 'intentosFallidos'].forEach(function (campo) { pm.expect(errores).to.have.property(campo); }); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06. PUT - Fecha futura inválida (400)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/admins/{{adminId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Pérez\",\n  \"usuario\": \"{{adminUsuario}}\",\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"DemoClave123\",\n  \"rol\": \"ADMIN\",\n  \"activo\": true,\n  \"intentosFallidos\": 0,\n  \"ultimoAcceso\": \"2999-01-01T00:00:00Z\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('Indica el error en ultimoAcceso', function () { pm.expect(pm.response.json().errores).to.have.property('ultimoAcceso'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07. POST - Usuario duplicado (409)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/admins",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Pérez\",\n  \"usuario\": \"{{adminUsuario}}\",\n  \"email\": \"otro.{{adminEmail}}\",\n  \"password\": \"DemoClave123\",\n  \"rol\": \"ADMIN\",\n  \"activo\": true,\n  \"intentosFallidos\": 0,\n  \"ultimoAcceso\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', function () { pm.response.to.have.status(409); });",
+              "pm.test('Informa usuario duplicado', function () { pm.expect(pm.response.json().message.toLowerCase()).to.include('usuario'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08. POST - Email duplicado (409)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/admins",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Pérez\",\n  \"usuario\": \"otro.{{adminUsuario}}\",\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"DemoClave123\",\n  \"rol\": \"ADMIN\",\n  \"activo\": true,\n  \"intentosFallidos\": 0,\n  \"ultimoAcceso\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', function () { pm.response.to.have.status(409); });",
+              "pm.test('Informa email duplicado', function () { pm.expect(pm.response.json().message.toLowerCase()).to.include('email'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09. DELETE - Eliminar admin de prueba (204)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/admins/{{adminId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 204', function () { pm.response.to.have.status(204); });",
+              "pm.test('Respuesta sin cuerpo', function () { pm.expect(pm.response.text()).to.eql(''); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. GET - Consultar admin eliminado (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/admins/{{adminId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });",
+              "pm.test('Respuesta de error JSON', function () { pm.expect(pm.response.json()).to.be.an('object'); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
