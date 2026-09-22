@@ -52,6 +52,10 @@ El servicio elimina espacios de los extremos de nombre, apellido, email y regist
 
 El manejador global existente devuelve `timestamp`, `status`, `error`, `message`, `path` y, para errores de validación, `errores` con el detalle por campo.
 
+## Colección de Postman
+
+Importar [psicologos.postman_collection.json](postman/psicologos.postman_collection.json) desde **Import → Files**. Incluye las ocho peticiones y comprobaciones automáticas de estados y respuestas. Ejecutarlas en orden; el POST guarda la variable `psicologoId` para las siguientes. La variable `baseUrl` vale `http://localhost:8080` y puede cambiarse en la colección. No requiere un environment adicional.
+
 ## Ocho pruebas manuales y evidencias
 
 Abrir `docs/psicologos.http` en el cliente HTTP de IntelliJ y ejecutar las peticiones en orden. El POST guarda automáticamente `psicologoId`. En otro cliente se debe copiar el ID de la respuesta del POST. Los casos solo actualizan y eliminan el registro creado para esta secuencia.
