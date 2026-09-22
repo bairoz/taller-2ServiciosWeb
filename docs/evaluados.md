@@ -46,11 +46,13 @@ Las mismas peticiones están en [`evaluados.http`](evaluados.http) (IntelliJ / V
 
 ### Postman
 
-1. Postman > **Import** > seleccionar [`postman/evaluados.postman_collection.json`](postman/evaluados.postman_collection.json).
-2. Si la API no corre en `http://localhost:8080`, cambiar la variable `baseUrl` de la colección.
-3. Clic derecho en la colección > **Run collection** > **Run**. Las 12 peticiones se ejecutan en orden y cada una verifica su código HTTP.
+1. Postman > **Import** > seleccionar [`postman/evaluados.postman_collection.json`](postman/evaluados.postman_collection.json) y el environment [`postman/evaluados-local.postman_environment.json`](postman/evaluados-local.postman_environment.json).
+2. Si la API no corre en `http://localhost:8080`, cambiar la variable `baseUrl`.
+3. Clic derecho en la colección > **Run collection** > **Run**. Las 8 peticiones se ejecutan en orden y cada una verifica su código HTTP.
 
-La petición *Crear evaluado válido* guarda el id creado en `{{evaluadoId}}`, que usan *Obtener*, *Actualizar* y *Eliminar*. El email lleva `{{$timestamp}}`, así que la colección se puede ejecutar varias veces sin chocar con el email único. La prueba del `409` usa un email de `03_datos_prueba.sql`.
+La colección contiene las 8 pruebas requeridas: 5 exitosas (una por endpoint: POST, GET listar, GET por id, PUT y DELETE), 2 con datos inválidos (POST y PUT, `400` con mensaje general y detalle de campos en `errores`) y 1 con identificador inexistente (GET, `404`).
+
+La petición *POST - Registrar evaluado* guarda el id creado en `{{evaluadoId}}`, que usan las siguientes; la última (*DELETE*) lo elimina. El email lleva `{{$timestamp}}`, así que la colección se puede ejecutar varias veces sin chocar con el email único.
 
 ### Crear
 
