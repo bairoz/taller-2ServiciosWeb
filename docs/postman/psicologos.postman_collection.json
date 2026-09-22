@@ -1,0 +1,253 @@
+{
+  "info": {
+    "name": "Psicometría API - Psicólogos",
+    "description": "Ocho pruebas del taller. Ejecutar en orden con la API iniciada y PostgreSQL configurado. La primera petición guarda psicologoId y la séptima elimina únicamente ese registro. Si se interrumpe la ejecución, retomar con el ID creado o cambiar email y numeroRegistro antes de repetir el POST. No requiere environment adicional.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "psicologoId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Crear psicólogo (201). Ejecutar primero; conserva el ID para los demás casos.",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/psicologos",
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          },
+          "raw": "{\n  \"nombre\": \"Camila\",\n  \"apellido\": \"Rojas\",\n  \"email\": \"camila.taller.psicologos@example.com\",\n  \"numeroRegistro\": \"PSI-TALLER-001\",\n  \"especialidad\": \"CLINICA\",\n  \"aniosExperiencia\": 5,\n  \"fechaTitulacion\": \"2020-03-21\",\n  \"disponible\": true\n}"
+        }
+      },
+      "event": [
+        {
+          "script": {
+            "exec": [
+              "pm.test('Estado HTTP 201', () => pm.response.to.have.status(201));",
+              "const body = pm.response.json();",
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"psicologoId\", body.id);",
+              "pm.test(\"ID generado\", () => pm.expect(body.id).to.be.a(\"number\"));",
+              "pm.test(\"Location presente\", () => pm.response.to.have.header(\"Location\"));"
+            ],
+            "type": "text/javascript"
+          },
+          "listen": "test"
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "02 - Listar psicólogos (200 y arreglo JSON)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/psicologos"
+      },
+      "event": [
+        {
+          "script": {
+            "exec": [
+              "pm.test('Estado HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test(\"Listado JSON\", () => pm.expect(body).to.be.an(\"array\"));"
+            ],
+            "type": "text/javascript"
+          },
+          "listen": "test"
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "03 - Consultar el psicólogo creado (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/psicologos/{{psicologoId}}"
+      },
+      "event": [
+        {
+          "script": {
+            "exec": [
+              "pm.test('Estado HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test(\"ID consultado\", () => pm.expect(String(body.id)).to.eql(String(pm.collectionVariables.get(\"psicologoId\"))));"
+            ],
+            "type": "text/javascript"
+          },
+          "listen": "test"
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "04 - Actualizar el psicólogo (200)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/psicologos/{{psicologoId}}",
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          },
+          "raw": "{\n  \"nombre\": \"Camila\",\n  \"apellido\": \"Rojas\",\n  \"email\": \"camila.taller.psicologos@example.com\",\n  \"numeroRegistro\": \"PSI-TALLER-001\",\n  \"especialidad\": \"EDUCACIONAL\",\n  \"aniosExperiencia\": 6,\n  \"fechaTitulacion\": \"2020-03-21\",\n  \"disponible\": false\n}"
+        }
+      },
+      "event": [
+        {
+          "script": {
+            "exec": [
+              "pm.test('Estado HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test(\"Datos actualizados\", () => { pm.expect(body.especialidad).to.eql(\"EDUCACIONAL\"); pm.expect(body.aniosExperiencia).to.eql(6); pm.expect(body.disponible).to.eql(false); });"
+            ],
+            "type": "text/javascript"
+          },
+          "listen": "test"
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "05 - POST inválido: nombre vacío, email inválido y registro vacío (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/psicologos",
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          },
+          "raw": "{\n  \"nombre\": \"\",\n  \"apellido\": \"Rojas\",\n  \"email\": \"correo-invalido\",\n  \"numeroRegistro\": \"\",\n  \"especialidad\": \"CLINICA\",\n  \"aniosExperiencia\": 5,\n  \"fechaTitulacion\": \"2020-03-21\",\n  \"disponible\": true\n}"
+        }
+      },
+      "event": [
+        {
+          "script": {
+            "exec": [
+              "pm.test('Estado HTTP 400', () => pm.response.to.have.status(400));",
+              "const body = pm.response.json();",
+              "pm.test(\"Errores por campo\", () => { [\"nombre\", \"email\", \"numeroRegistro\"].forEach(campo => pm.expect(body.errores).to.have.property(campo)); });"
+            ],
+            "type": "text/javascript"
+          },
+          "listen": "test"
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "06 - PUT inválido: experiencia fuera de rango y fecha futura (400)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/psicologos/{{psicologoId}}",
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          },
+          "raw": "{\n  \"nombre\": \"Camila\",\n  \"apellido\": \"Rojas\",\n  \"email\": \"camila.taller.psicologos@example.com\",\n  \"numeroRegistro\": \"PSI-TALLER-001\",\n  \"especialidad\": \"CLINICA\",\n  \"aniosExperiencia\": 61,\n  \"fechaTitulacion\": \"2999-01-01\",\n  \"disponible\": true\n}"
+        }
+      },
+      "event": [
+        {
+          "script": {
+            "exec": [
+              "pm.test('Estado HTTP 400', () => pm.response.to.have.status(400));",
+              "const body = pm.response.json();",
+              "pm.test(\"Experiencia y fecha rechazadas\", () => { [\"aniosExperiencia\", \"fechaTitulacion\"].forEach(campo => pm.expect(body.errores).to.have.property(campo)); });"
+            ],
+            "type": "text/javascript"
+          },
+          "listen": "test"
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "07 - Eliminar el psicólogo creado (200 con JSON)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/psicologos/{{psicologoId}}"
+      },
+      "event": [
+        {
+          "script": {
+            "exec": [
+              "pm.test('Estado HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test(\"Confirmacion JSON\", () => pm.expect(body.mensaje).to.eql(\"Psicologo eliminado correctamente\"));"
+            ],
+            "type": "text/javascript"
+          },
+          "listen": "test"
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "08 - Consultar el ID recién eliminado garantiza que no existe (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/psicologos/{{psicologoId}}"
+      },
+      "event": [
+        {
+          "script": {
+            "exec": [
+              "pm.test('Estado HTTP 404', () => pm.response.to.have.status(404));",
+              "const body = pm.response.json();",
+              "pm.test(\"Mensaje de recurso inexistente\", () => pm.expect(body.message).to.include(\"no encontrado\"));"
+            ],
+            "type": "text/javascript"
+          },
+          "listen": "test"
+        }
+      ],
+      "response": []
+    }
+  ]
+}
